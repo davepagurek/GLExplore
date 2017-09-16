@@ -45,13 +45,35 @@ int main() {
   }
 
   Lambertian rect(Color(0xFFFFFFFF), {
-    0.5f,  0.5f, 0.0f,  // top right
-    0.5f, -0.5f, 0.0f,  // bottom right
-    -0.5f, -0.5f, 0.0f,  // bottom left
-    -0.5f,  0.5f, 0.0f   // top left 
+    //front
+    0.5f,  0.5f, -0.5f,  // top right
+    0.5f, -0.5f, -0.5f,  // bottom right
+    -0.5f, -0.5f, -0.5f,  // bottom left
+    -0.5f,  0.5f, -0.5f,   // top left 
+
+    // back
+    0.5f,  0.5f, 0.5f,  // top right
+    0.5f, -0.5f, 0.5f,  // bottom right
+    -0.5f, -0.5f, 0.5f,  // bottom left
+    -0.5f,  0.5f, 0.5f   // top left
   }, {  // note that we start from 0!
     0, 1, 3,   // first triangle
-    1, 2, 3    // second triangle
+    1, 2, 3,    // second triangle
+
+    4, 5, 7,
+    5, 6, 7,
+
+    5, 7, 3,
+    5, 1, 3,
+
+    4, 0, 2,
+    4, 6, 2,
+    
+    2, 3, 6,
+    6, 3, 7,
+
+    0, 1, 5,
+    0, 4, 5
   });
 
   glm::mat4 projection = glm::perspective(glm::radians(45.0f), screenWidth / screenHeight, 0.1f, 100.0f);

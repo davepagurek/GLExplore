@@ -60,7 +60,7 @@ void Lambertian::draw(glm::mat4& projection, glm::mat4& view) {
   unsigned int projectionLoc = glGetUniformLocation(shaderProgram, "projection");
   glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
 
-  glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+  glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
 }
 
 void Lambertian::cleanup() {
