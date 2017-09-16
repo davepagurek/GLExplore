@@ -1,7 +1,7 @@
 FILENAME=glexplore
 EXECUTABLE=$(FILENAME)
 
-CC=g++
+CC=g++ -std=c++11
 
 CFLAGS= -c -Wall -Iinclude
 LDFLAGS= `pkg-config --static --libs glfw3`
@@ -11,7 +11,7 @@ ifeq ($(UNAME_S),Darwin)
 	LDFLAGS += -framework OpenGL
 endif
 
-SOURCES = src/main.cpp src/glad.cpp
+SOURCES = $(wildcard src/*.cpp)
 OBJECTS = $(SOURCES:.cpp=.o)
 
 default: build
