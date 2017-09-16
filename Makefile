@@ -4,7 +4,7 @@ EXECUTABLE=$(FILENAME)
 CC=g++
 
 CFLAGS= -c -Wall -Iinclude
-LDFLAGS= -lglfw -framework OpenGL -framework Cocoa -framework IOKit
+LDFLAGS= `pkg-config --static --libs glfw3`
 
 UNAME_S := $(shell uname -s)
 ifeq ($(UNAME_S),Darwin)
