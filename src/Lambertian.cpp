@@ -1,4 +1,5 @@
 #include "Lambertian.hpp"
+#include <GLFW/glfw3.h>
 
 bool Lambertian::shaderProgramCompiled = false;
 unsigned int Lambertian::shaderProgram = 0;
@@ -44,10 +45,21 @@ void Lambertian::compileShaderProgram() throw(ShaderProgramCompilationError) {
   compileShaderProgramSource(vertexSource, fragmentSource);
 }
 
-void Lambertian::draw() {
+void Lambertian::draw(glm::mat4& projection, glm::mat4& view) {
+  model = glm::rotate(glm::mat4(), (float)glfwGetTime(), glm::vec3(1.0f, 0.0f, 0.0f));
   glUseProgram(shaderProgram);
   glBindVertexArray(VAO);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+
+  unsigned int modelLoc = glGetUniformLocation(shaderProgram, "model");
+  glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+
+  unsigned int viewLoc = glGetUniformLocation(shaderProgram, "view");
+  glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
+
+  unsigned int projectionLoc = glGetUniformLocation(shaderProgram, "projection");
+  glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
+
   glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 }
 
