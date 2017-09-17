@@ -14,7 +14,6 @@ const char Lambertian::fragmentSource[] =
 ;
 #include <iostream>
 
-
 Lambertian::Lambertian(Color diffuse, std::vector<float> vertices):
   diffuse(diffuse),
   vertices(std::move(vertices))
