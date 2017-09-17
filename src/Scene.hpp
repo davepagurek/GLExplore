@@ -27,21 +27,25 @@ struct Scene {
 
   void moveCameraLeft() {
     cameraPos.x += 0.05;
+    cameraTarget.x += 0.05;
     view = glm::lookAt(cameraPos, cameraTarget, glm::vec3(0,1,0));
   }
 
   void moveCameraRight() {
     cameraPos.x -= 0.05;
+    cameraTarget.x -= 0.05;
     view = glm::lookAt(cameraPos, cameraTarget, glm::vec3(0,1,0));
   }
 
   void moveCameraUp() {
     cameraPos.y += 0.05;
+    cameraTarget.y += 0.05;
     view = glm::lookAt(cameraPos, cameraTarget, glm::vec3(0,1,0));
   }
 
   void moveCameraDown() {
     cameraPos.y -= 0.05;
+    cameraTarget.y -= 0.05;
     view = glm::lookAt(cameraPos, cameraTarget, glm::vec3(0,1,0));
   }
 };
