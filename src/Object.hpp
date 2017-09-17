@@ -5,7 +5,7 @@
 
 class Object {
   public:
-    virtual void draw(Scene& scene) = 0;
+    virtual void draw(const Scene& scene) = 0;
 };
 
 #endif

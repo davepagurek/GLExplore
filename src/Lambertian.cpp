@@ -1,5 +1,6 @@
 #include "Lambertian.hpp"
 #include <GLFW/glfw3.h>
+#include <utility>
 
 bool Lambertian::shaderProgramCompiled = false;
 unsigned int Lambertian::shaderProgram = 0;
@@ -11,11 +12,23 @@ const char Lambertian::vertexSource[] =
 const char Lambertian::fragmentSource[] =
 #include "shaders/fragment.glsl"
 ;
+#include <iostream>
 
-Lambertian::Lambertian(Color diffuse, std::vector<float> vertices):
+Lambertian::Lambertian(Color diffuse, const std::vector<float> &vertices):
   diffuse(diffuse),
   vertices(vertices)
 {
+  generateBuffers();
+}
+
+Lambertian::Lambertian(Color diffuse, std::vector<float> &&vertices):
+  diffuse(diffuse),
+  vertices(std::move(vertices))
+{
+  generateBuffers();
+}
+
+void Lambertian::generateBuffers() {
   glGenBuffers(1, &VBO);
   glGenVertexArrays(1, &VAO);  
 
@@ -43,7 +56,7 @@ void Lambertian::compileShaderProgram() throw(ShaderProgramCompilationError) {
   compileShaderProgramSource(vertexSource, fragmentSource);
 }
 
-void Lambertian::draw(Scene& scene) {
+void Lambertian::draw(const Scene& scene) {
   // todo move this rotation out of here so it's more generic
   glm::mat4 transformed = glm::rotate(model, (float)glfwGetTime(), glm::vec3(1.0f, 0.0f, 0.0f));
   transformed = glm::rotate(transformed, (float)glfwGetTime(), glm::vec3(0.0f, 0.2f, 0.0f));
@@ -73,7 +86,7 @@ void Lambertian::draw(Scene& scene) {
   glm::vec3 pointLightLocation[8];
   glm::vec3 pointLightColor[8];
   for (int i = 0; i < 8 && i < scene.pointLights.size(); i++) {
-    PointLight& p = scene.pointLights[i];
+    const PointLight& p = scene.pointLights[i];
     pointLightLocation[i] = p.location;
     pointLightColor[i] = glm::vec3(p.color.r(), p.color.g(), p.color.b());
   }

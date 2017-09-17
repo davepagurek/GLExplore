@@ -26,13 +26,16 @@ class Lambertian: public Object {
 
     static void compileShaderProgramSource(const char vertexSource[], const char fragmentSource[]) throw(ShaderProgramCompilationError);
 
+    void generateBuffers();
+
   public:
     static void compileShaderProgram() throw(ShaderProgramCompilationError);
     glm::mat4 model;
     Color diffuse;
 
-    Lambertian(Color diffuse, std::vector<float> vertices);
-    virtual void draw(Scene& scene);
+    Lambertian(Color diffuse, const std::vector<float> &vertices);
+    Lambertian(Color diffuse, std::vector<float> &&vertices);
+    virtual void draw(const Scene& scene);
     static void cleanup();
 };
 
