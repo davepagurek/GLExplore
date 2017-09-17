@@ -7,6 +7,7 @@
 
 #include "Lambertian.hpp"
 #include "Color.hpp"
+#include "Scene.hpp"
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow *window);
@@ -36,6 +37,7 @@ int main() {
   }
 
   glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+  glEnable(GL_DEPTH_TEST); 
 
   try {
     Lambertian::compileShaderProgram();
@@ -44,48 +46,73 @@ int main() {
     exit(1);
   }
 
-  Lambertian rect(Color(0xFFFFFFFF), {
-    //front
-    0.5f,  0.5f, -0.5f,  // top right
-    0.5f, -0.5f, -0.5f,  // bottom right
-    -0.5f, -0.5f, -0.5f,  // bottom left
-    -0.5f,  0.5f, -0.5f,   // top left 
+  Lambertian rect(Color(0xFFFFFF), {
+        -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+         0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+         0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+         0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+        -0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+        -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
 
-    // back
-    0.5f,  0.5f, 0.5f,  // top right
-    0.5f, -0.5f, 0.5f,  // bottom right
-    -0.5f, -0.5f, 0.5f,  // bottom left
-    -0.5f,  0.5f, 0.5f   // top left
-  }, {  // note that we start from 0!
-    0, 1, 3,   // first triangle
-    1, 2, 3,    // second triangle
+        -0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
+         0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
+         0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
+         0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
+        -0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
+        -0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
 
-    4, 5, 7,
-    5, 6, 7,
+        -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
+        -0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
+        -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
+        -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
+        -0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
+        -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
 
-    5, 7, 3,
-    5, 1, 3,
+         0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
+         0.5f,  0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
+         0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
+         0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
+         0.5f, -0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
+         0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
 
-    4, 0, 2,
-    4, 6, 2,
-    
-    2, 3, 6,
-    6, 3, 7,
+        -0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
+         0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
+         0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
+         0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
+        -0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
+        -0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
 
-    0, 1, 5,
-    0, 4, 5
-  });
+        -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
+         0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
+         0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
+         0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
+        -0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
+        -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f
+    });
 
-  glm::mat4 projection = glm::perspective(glm::radians(45.0f), screenWidth / screenHeight, 0.1f, 100.0f);
-  glm::mat4 view = glm::translate(glm::mat4(), glm::vec3(0.0f, 0.0f, -3.0f)); 
+  Lambertian rect2 = rect;
+  rect2.model = glm::scale(rect2.model, glm::vec3(0.5, 0.5, 0.5));
+  rect2.model = glm::translate(rect2.model, glm::vec3(3, 0.5, 0.5));
+  rect2.diffuse = Color(0xFF8888);
+
+  Scene scene(
+    glm::perspective(glm::radians(45.0f), screenWidth / screenHeight, 0.1f, 100.0f),
+    glm::vec3(0.0f, 0.0f, -3.0f),
+    glm::vec3(0.0f, 0.0f, 10.0f),
+    Color(0x888888),
+    {
+      {Color(0xFFFFFF), glm::vec3(0.5, 0.0, -1.0)}
+    }
+  );
 
   while(!glfwWindowShouldClose(window)) {
     processInput(window);
 
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    rect.draw(projection, view);
+    rect.draw(scene);
+    rect2.draw(scene);
 
     glfwSwapBuffers(window);
     glfwPollEvents();    

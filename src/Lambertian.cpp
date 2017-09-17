@@ -12,24 +12,22 @@ const std::string Lambertian::fragmentSource =
 #include "shaders/fragment.glsl"
 ;
 
-Lambertian::Lambertian(Color diffuse, std::vector<float> vertices, std::vector<unsigned int> indices):
+Lambertian::Lambertian(Color diffuse, std::vector<float> vertices):
   diffuse(diffuse),
-  vertices(vertices),
-  indices(indices)
+  vertices(vertices)
 {
   glGenBuffers(1, &VBO);
-  glBindBuffer(GL_ARRAY_BUFFER, VBO);
-
   glGenVertexArrays(1, &VAO);  
-  glBindVertexArray(VAO);
+
   glBindBuffer(GL_ARRAY_BUFFER, VBO);
   glBufferData(GL_ARRAY_BUFFER, vertices.size()*sizeof(float), &vertices.front(), GL_STATIC_DRAW);
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-  glEnableVertexAttribArray(0);
 
-  glGenBuffers(1, &EBO);
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-  glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size()*sizeof(unsigned int), &indices.front(), GL_STATIC_DRAW);
+  glBindVertexArray(VAO);
+  
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+  glEnableVertexAttribArray(0);
+  glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+  glEnableVertexAttribArray(1);
 }
 
 void Lambertian::compileShaderProgramSource(const std::string& vertexSource, const std::string& fragmentSource) throw(ShaderProgramCompilationError) {
@@ -45,22 +43,49 @@ void Lambertian::compileShaderProgram() throw(ShaderProgramCompilationError) {
   compileShaderProgramSource(vertexSource, fragmentSource);
 }
 
-void Lambertian::draw(glm::mat4& projection, glm::mat4& view) {
-  model = glm::rotate(glm::mat4(), (float)glfwGetTime(), glm::vec3(1.0f, 0.0f, 0.0f));
+void Lambertian::draw(Scene& scene) {
+  // todo move this rotation out of here so it's more generic
+  glm::mat4 transformed = glm::rotate(model, (float)glfwGetTime(), glm::vec3(1.0f, 0.0f, 0.0f));
+  transformed = glm::rotate(transformed, (float)glfwGetTime(), glm::vec3(0.0f, 0.2f, 0.0f));
   glUseProgram(shaderProgram);
-  glBindVertexArray(VAO);
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 
   unsigned int modelLoc = glGetUniformLocation(shaderProgram, "model");
-  glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+  glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(transformed));
 
   unsigned int viewLoc = glGetUniformLocation(shaderProgram, "view");
-  glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
+  glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(scene.view));
 
   unsigned int projectionLoc = glGetUniformLocation(shaderProgram, "projection");
-  glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(projection));
+  glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(scene.projection));
 
-  glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
+  unsigned int cameraPosLoc = glGetUniformLocation(shaderProgram, "cameraPos");
+  glUniform3f(cameraPosLoc, scene.cameraPos.x, scene.cameraPos.y, scene.cameraPos.z);
+
+  unsigned int objectColorLoc = glGetUniformLocation(shaderProgram, "objectColor");
+  glUniform3f(objectColorLoc, diffuse.r(), diffuse.g(), diffuse.b());
+
+  unsigned int ambientColorLoc = glGetUniformLocation(shaderProgram, "ambientColor");
+  glUniform3f(ambientColorLoc, scene.ambientLight.r(), scene.ambientLight.g(), scene.ambientLight.b());
+
+  unsigned int numPointLightsLoc = glGetUniformLocation(shaderProgram, "numPointLights");
+  glUniform1i(numPointLightsLoc, scene.pointLights.size());
+
+  glm::vec3 pointLightLocation[8];
+  glm::vec3 pointLightColor[8];
+  for (int i = 0; i < 8 && i < scene.pointLights.size(); i++) {
+    PointLight& p = scene.pointLights[i];
+    pointLightLocation[i] = p.location;
+    pointLightColor[i] = glm::vec3(p.color.r(), p.color.g(), p.color.b());
+  }
+
+  unsigned int pointLightLocationLoc = glGetUniformLocation(shaderProgram, "pointLightLocation");
+  glUniform3fv(pointLightLocationLoc, 8, glm::value_ptr(pointLightLocation[0]));
+
+  unsigned int pointLightColorLoc = glGetUniformLocation(shaderProgram, "pointLightColor");
+  glUniform3fv(pointLightColorLoc, 8, glm::value_ptr(pointLightColor[0]));
+
+  glBindVertexArray(VAO);
+  glDrawArrays(GL_TRIANGLES, 0, 36);//vertices.size()/6);
 }
 
 void Lambertian::cleanup() {

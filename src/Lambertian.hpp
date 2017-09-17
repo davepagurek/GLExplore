@@ -21,19 +21,18 @@ class Lambertian: public Object {
     static const std::string vertexSource;
     static const std::string fragmentSource;
 
-    Color diffuse;
-    unsigned int VBO, VAO, EBO;
+    unsigned int VBO, VAO;
     std::vector<float> vertices;
-    std::vector<unsigned int> indices;
 
     static void compileShaderProgramSource(const std::string& vertexSource, const std::string& fragmentSource) throw(ShaderProgramCompilationError);
 
   public:
     static void compileShaderProgram() throw(ShaderProgramCompilationError);
     glm::mat4 model;
+    Color diffuse;
 
-    Lambertian(Color diffuse, std::vector<float> vertices, std::vector<unsigned int> indices);
-    virtual void draw(glm::mat4& projection, glm::mat4& view);
+    Lambertian(Color diffuse, std::vector<float> vertices);
+    virtual void draw(Scene& scene);
     static void cleanup();
 };
 

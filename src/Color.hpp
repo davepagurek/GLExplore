@@ -2,15 +2,14 @@
 #define COLOR_H
 
 class Color {
-  float red, green, blue, alpha;
+  float red, green, blue;
 
   public:
-    Color(long hex);
-    Color(float red, float green, float blue, float alpha);
+    Color(int hex);
+    Color(float red, float green, float blue);
     float r() const;
     float g() const;
     float b() const;
-    float a() const;
 };
 
 #endif
