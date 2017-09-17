@@ -10,7 +10,7 @@
 #include "Scene.hpp"
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
-void processInput(GLFWwindow *window);
+void processInput(GLFWwindow *window, Scene &scene);
 std::string slurp(std::string filename);
 
 const float screenWidth = 800;
@@ -106,7 +106,7 @@ int main() {
   );
 
   while(!glfwWindowShouldClose(window)) {
-    processInput(window);
+    processInput(window, scene);
 
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -128,7 +128,16 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
   glViewport(0, 0, width, height);
 }
 
-void processInput(GLFWwindow *window) {
-  if(glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+void processInput(GLFWwindow *window, Scene &scene) {
+  if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
     glfwSetWindowShouldClose(window, true);
+  } else if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) {
+    scene.moveCameraLeft();
+  } else if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) {
+    scene.moveCameraRight();
+  } else if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) {
+    scene.moveCameraUp();
+  } else if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) {
+    scene.moveCameraDown();
+  }
 }
