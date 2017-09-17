@@ -5,7 +5,7 @@ class Color {
   float red, green, blue;
 
   public:
-    Color(int hex);
+    explicit Color(int hex);
     Color(float red, float green, float blue);
     float r() const;
     float g() const;

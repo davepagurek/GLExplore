@@ -16,13 +16,21 @@ struct Scene {
   Color ambientLight;
   std::vector<PointLight> pointLights;
 
-  Scene(glm::mat4 projection, glm::vec3 cameraPos, glm::vec3 cameraTarget, Color ambientLight, std::vector<PointLight> pointLights):
+  Scene(glm::mat4 projection, glm::vec3 cameraPos, glm::vec3 cameraTarget, Color ambientLight, const std::vector<PointLight> &pointLights):
     projection(projection),
     cameraPos(cameraPos),
     cameraTarget(cameraTarget),
     view(glm::lookAt(cameraPos, cameraTarget, glm::vec3(0,1,0))),
     ambientLight(ambientLight),
     pointLights(pointLights) {}
+
+  Scene(glm::mat4 projection, glm::vec3 cameraPos, glm::vec3 cameraTarget, Color ambientLight, std::vector<PointLight> &&pointLights):
+    projection(projection),
+    cameraPos(cameraPos),
+    cameraTarget(cameraTarget),
+    view(glm::lookAt(cameraPos, cameraTarget, glm::vec3(0,1,0))),
+    ambientLight(ambientLight),
+    pointLights(std::move(pointLights)) {}
 };
 
 #endif
