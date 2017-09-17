@@ -1,9 +1,9 @@
 FILENAME=glexplore
 EXECUTABLE=$(FILENAME)
 
-CC=g++ -std=c++11
+CC=g++
 
-CFLAGS= -c -Wall -Iinclude
+CFLAGS= -std=c++11 -c -Wall -Iinclude
 LDFLAGS= `pkg-config --static --libs glfw3`
 
 UNAME_S := $(shell uname -s)
