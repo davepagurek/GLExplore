@@ -17,7 +17,7 @@ OBJECTS = $(SOURCES:.cpp=.o)
 default: build
 
 $(EXECUTABLE): $(OBJECTS)
-	$(CC) -s $(OBJECTS) -o $@ $(LDFLAGS)
+	$(CC) $(OBJECTS) -o $@ $(LDFLAGS)
 
 .cpp.o:
 	$(CC) $(CFLAGS) $< -o $@
