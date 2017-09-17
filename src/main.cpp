@@ -1,4 +1,4 @@
-#include <glad/glad.h> 
+#include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <iostream>
 #include <string>
@@ -37,7 +37,7 @@ int main() {
   }
 
   glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
-  glEnable(GL_DEPTH_TEST); 
+  glEnable(GL_DEPTH_TEST);
 
   try {
     Lambertian::compileShaderProgram();
@@ -115,7 +115,7 @@ int main() {
     rect2.draw(scene);
 
     glfwSwapBuffers(window);
-    glfwPollEvents();    
+    glfwPollEvents();
   }
 
   Lambertian::cleanup();

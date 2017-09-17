@@ -33,8 +33,7 @@ class Lambertian: public Object {
     glm::mat4 model;
     Color diffuse;
 
-    Lambertian(Color diffuse, const std::vector<float> &vertices);
-    Lambertian(Color diffuse, std::vector<float> &&vertices);
+    Lambertian(Color diffuse, std::vector<float> vertices);
     virtual void draw(const Scene& scene);
     static void cleanup();
 };

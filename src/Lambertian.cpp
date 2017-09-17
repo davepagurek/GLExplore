@@ -14,29 +14,23 @@ const char Lambertian::fragmentSource[] =
 ;
 #include <iostream>
 
-Lambertian::Lambertian(Color diffuse, const std::vector<float> &vertices):
-  vertices(vertices),
-  diffuse(diffuse)
-{
-  generateBuffers();
-}
 
-Lambertian::Lambertian(Color diffuse, std::vector<float> &&vertices):
-  vertices(std::move(vertices)),
-  diffuse(diffuse)
+Lambertian::Lambertian(Color diffuse, std::vector<float> vertices):
+  diffuse(diffuse),
+  vertices(std::move(vertices))
 {
   generateBuffers();
 }
 
 void Lambertian::generateBuffers() {
   glGenBuffers(1, &VBO);
-  glGenVertexArrays(1, &VAO);  
+  glGenVertexArrays(1, &VAO);
 
   glBindBuffer(GL_ARRAY_BUFFER, VBO);
   glBufferData(GL_ARRAY_BUFFER, vertices.size()*sizeof(float), &vertices.front(), GL_STATIC_DRAW);
 
   glBindVertexArray(VAO);
-  
+
   glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
   glEnableVertexAttribArray(0);
   glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
