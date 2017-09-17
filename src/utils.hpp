@@ -12,6 +12,6 @@ class ShaderProgramCompilationError {
     std::string getMessage();
 };
 
-unsigned int compileShader(const std::string &source, int type) throw(ShaderProgramCompilationError);
+unsigned int compileShader(const char source[], int type) throw(ShaderProgramCompilationError);
 
 #endif

@@ -5,10 +5,10 @@ bool Lambertian::shaderProgramCompiled = false;
 unsigned int Lambertian::shaderProgram = 0;
 unsigned int Lambertian::vertexShader = 0;
 unsigned int Lambertian::fragmentShader = 0;
-const std::string Lambertian::vertexSource =
+const char Lambertian::vertexSource[] =
 #include "shaders/vertex.glsl"
 ;
-const std::string Lambertian::fragmentSource =
+const char Lambertian::fragmentSource[] =
 #include "shaders/fragment.glsl"
 ;
 
@@ -30,7 +30,7 @@ Lambertian::Lambertian(Color diffuse, std::vector<float> vertices):
   glEnableVertexAttribArray(1);
 }
 
-void Lambertian::compileShaderProgramSource(const std::string& vertexSource, const std::string& fragmentSource) throw(ShaderProgramCompilationError) {
+void Lambertian::compileShaderProgramSource(const char vertexSource[], const char fragmentSource[]) throw(ShaderProgramCompilationError) {
   vertexShader = compileShader(vertexSource, GL_VERTEX_SHADER);
   fragmentShader = compileShader(fragmentSource, GL_FRAGMENT_SHADER);
   shaderProgram = glCreateProgram();

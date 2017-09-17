@@ -7,10 +7,9 @@ std::string ShaderProgramCompilationError::getMessage() {
   return message;
 }
 
-unsigned int compileShader(const std::string& source, int type) throw(ShaderProgramCompilationError) {
+unsigned int compileShader(const char source[], int type) throw(ShaderProgramCompilationError) {
   unsigned int shader = glCreateShader(type);
-  const char* cShaderSource = source.c_str();
-  glShaderSource(shader, 1, &cShaderSource, NULL);
+  glShaderSource(shader, 1, &source, NULL);
   glCompileShader(shader);
 
   int success;

@@ -18,13 +18,13 @@ class Lambertian: public Object {
     static unsigned int vertexShader;
     static unsigned int fragmentShader;
 
-    static const std::string vertexSource;
-    static const std::string fragmentSource;
+    static const char vertexSource[];
+    static const char fragmentSource[];
 
     unsigned int VBO, VAO;
     std::vector<float> vertices;
 
-    static void compileShaderProgramSource(const std::string& vertexSource, const std::string& fragmentSource) throw(ShaderProgramCompilationError);
+    static void compileShaderProgramSource(const char vertexSource[], const char fragmentSource[]) throw(ShaderProgramCompilationError);
 
   public:
     static void compileShaderProgram() throw(ShaderProgramCompilationError);
