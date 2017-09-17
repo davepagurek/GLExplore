@@ -1,6 +1,7 @@
 #include "Lambertian.hpp"
 #include <GLFW/glfw3.h>
 #include <utility>
+#include <iostream>
 
 bool Lambertian::shaderProgramCompiled = false;
 unsigned int Lambertian::shaderProgram = 0;
@@ -14,17 +15,11 @@ const char Lambertian::fragmentSource[] =
 ;
 #include <iostream>
 
-Lambertian::Lambertian(Color diffuse, const std::vector<float> &vertices):
-  diffuse(diffuse),
-  vertices(vertices)
+Lambertian::Lambertian(Color diffuse, std::vector<float> vertices):
+  vertices(std::move(vertices)),
+  diffuse(diffuse)
 {
-  generateBuffers();
-}
-
-Lambertian::Lambertian(Color diffuse, std::vector<float> &&vertices):
-  diffuse(diffuse),
-  vertices(std::move(vertices))
-{
+  std::cout << "move" << std::endl;
   generateBuffers();
 }
 
