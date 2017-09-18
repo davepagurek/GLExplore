@@ -15,15 +15,12 @@ public:
   Scene(glm::mat4, glm::vec3, glm::vec3, Color, std::vector<PointLight>);
 
   // Accessors
-  const Color     getAmbientLight() const;
-  const glm::vec3 getCameraPos()    const;
-  const glm::vec3 getCameraTarget() const;
-  const glm::mat4 getProjection()   const;
-  const glm::mat4 getView()         const;
-  const std::vector<PointLight> getPointLights() const;
-
-  // Mutators
-  void setView();
+  const Color&     getAmbientLight() const;
+  const glm::vec3& getCameraPos()    const;
+  const glm::vec3& getCameraTarget() const;
+  const glm::mat4& getProjection()   const;
+  const glm::mat4& getView()         const;
+  const std::vector<PointLight>& getPointLights() const;
 
   // Camera movement
   void moveCameraLeft();
@@ -32,11 +29,13 @@ public:
   void moveCameraBackward();
 
 private:
-  static const glm::vec3 upVector;
 
+  // Mutators
+  void setView();
+
+  static const glm::vec3 upVector;
   glm::vec3 cameraPos, cameraTarget;
   glm::mat4 projection, view;
-
   Color ambientLight;
   std::vector<PointLight> pointLights;
 

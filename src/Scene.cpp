@@ -1,7 +1,5 @@
 #include "Scene.hpp"
 
-const glm::vec3 Scene::upVector(0, 1, 0);
-
 Scene::Scene(glm::mat4 projection, glm::vec3 cameraPos, glm::vec3 cameraTarget, Color ambientLight,
       std::vector<PointLight> pointLights):
   cameraPos(cameraPos),
@@ -13,34 +11,28 @@ Scene::Scene(glm::mat4 projection, glm::vec3 cameraPos, glm::vec3 cameraTarget, 
 
 // Accessors
 
-const Color Scene::getAmbientLight() const {
+const Color& Scene::getAmbientLight() const {
   return ambientLight;
 }
 
-const glm::vec3 Scene::getCameraPos() const {
+const glm::vec3& Scene::getCameraPos() const {
   return cameraPos;
 }
 
-const glm::vec3 Scene::getCameraTarget() const {
+const glm::vec3& Scene::getCameraTarget() const {
   return cameraTarget;
 }
 
-const glm::mat4 Scene::getProjection() const {
+const glm::mat4& Scene::getProjection() const {
   return projection;
 }
 
-const glm::mat4 Scene::getView() const {
+const glm::mat4& Scene::getView() const {
   return view;
 }
 
-const std::vector<PointLight> Scene::getPointLights() const {
+const std::vector<PointLight>& Scene::getPointLights() const {
   return pointLights;
-}
-
-// Mutators
-
-void Scene::setView() {
-  view = glm::lookAt(cameraPos, cameraTarget, Scene::upVector);
 }
 
 // Camera movement
@@ -68,3 +60,11 @@ void Scene::moveCameraBackward() {
   cameraTarget.z -= 0.05;
   setView();
 }
+
+// Mutators
+
+void Scene::setView() {
+  view = glm::lookAt(cameraPos, cameraTarget, Scene::upVector);
+}
+
+const glm::vec3 Scene::upVector(0, 1, 0);
