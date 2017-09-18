@@ -6,9 +6,9 @@ bool Lambertian::shaderProgramCompiled = false;
 unsigned int Lambertian::shaderProgram = 0;
 unsigned int Lambertian::vertexShader = 0;
 unsigned int Lambertian::fragmentShader = 0;
-const glm::vec3 Lambertian::xAxis(1,0,0);
-const glm::vec3 Lambertian::yAxis(0,1,0);
-const glm::vec3 Lambertian::zAxis(0,0,1);
+const glm::vec3 Lambertian::xAxis(1, 0, 0);
+const glm::vec3 Lambertian::yAxis(0, 1, 0);
+const glm::vec3 Lambertian::zAxis(0, 0, 1);
 const char Lambertian::vertexSource[] =
 #include "shaders/vertex.glsl"
 ;
