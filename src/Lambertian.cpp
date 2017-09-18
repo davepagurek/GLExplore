@@ -59,27 +59,27 @@ void Lambertian::draw(const Scene& scene) {
   glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(transformed));
 
   unsigned int viewLoc = glGetUniformLocation(shaderProgram, "view");
-  glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(scene.view));
+  glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(scene.getView()));
 
   unsigned int projectionLoc = glGetUniformLocation(shaderProgram, "projection");
-  glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(scene.projection));
+  glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(scene.getProjection()));
 
   unsigned int cameraPosLoc = glGetUniformLocation(shaderProgram, "cameraPos");
-  glUniform3f(cameraPosLoc, scene.cameraPos.x, scene.cameraPos.y, scene.cameraPos.z);
+  glUniform3f(cameraPosLoc, scene.getCameraPos().x, scene.getCameraPos().y, scene.getCameraPos().z);
 
   unsigned int objectColorLoc = glGetUniformLocation(shaderProgram, "objectColor");
   glUniform3f(objectColorLoc, diffuse.r(), diffuse.g(), diffuse.b());
 
   unsigned int ambientColorLoc = glGetUniformLocation(shaderProgram, "ambientColor");
-  glUniform3f(ambientColorLoc, scene.ambientLight.r(), scene.ambientLight.g(), scene.ambientLight.b());
+  glUniform3f(ambientColorLoc, scene.getAmbientLight().r(), scene.getAmbientLight().g(), scene.getAmbientLight().b());
 
   unsigned int numPointLightsLoc = glGetUniformLocation(shaderProgram, "numPointLights");
-  glUniform1i(numPointLightsLoc, scene.pointLights.size());
+  glUniform1i(numPointLightsLoc, scene.getPointLights().size());
 
   glm::vec3 pointLightLocation[8];
   glm::vec3 pointLightColor[8];
-  for (int i = 0; i < 8 && i < scene.pointLights.size(); i++) {
-    const PointLight& p = scene.pointLights[i];
+  for (int i = 0; i < 8 && i < scene.getPointLights().size(); i++) {
+    const PointLight& p = scene.getPointLights()[i];
     pointLightLocation[i] = p.location;
     pointLightColor[i] = glm::vec3(p.color.r(), p.color.g(), p.color.b());
   }
