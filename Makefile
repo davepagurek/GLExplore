@@ -3,7 +3,7 @@ EXECUTABLE=$(FILENAME)
 
 CC=g++
 
-CFLAGS= -c -Wall -Iinclude
+CFLAGS= -std=c++11 -c -Wall -Iinclude
 LDFLAGS= `pkg-config --static --libs glfw3`
 
 UNAME_S := $(shell uname -s)
@@ -11,13 +11,13 @@ ifeq ($(UNAME_S),Darwin)
 	LDFLAGS += -framework OpenGL
 endif
 
-SOURCES = src/main.cpp src/glad.cpp
+SOURCES = $(wildcard src/*.cpp)
 OBJECTS = $(SOURCES:.cpp=.o)
 
 default: build
 
 $(EXECUTABLE): $(OBJECTS)
-	$(CC) -s $(OBJECTS) -o $@ $(LDFLAGS)
+	$(CC) $(OBJECTS) -o $@ $(LDFLAGS)
 
 .cpp.o:
 	$(CC) $(CFLAGS) $< -o $@
