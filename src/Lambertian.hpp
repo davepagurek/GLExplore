@@ -27,6 +27,7 @@ class Lambertian: public Object {
     static void compileShaderProgramSource(const char vertexSource[], const char fragmentSource[]) throw(ShaderProgramCompilationError);
 
     void generateBuffers();
+    void updateModel();
 
     glm::mat4 model;
     glm::vec3 translation;
@@ -36,7 +37,6 @@ class Lambertian: public Object {
     static const glm::vec3 xAxis;
     static const glm::vec3 yAxis;
     static const glm::vec3 zAxis;
-    void updateModel();
 
   public:
     static void compileShaderProgram() throw(ShaderProgramCompilationError);
@@ -46,9 +46,10 @@ class Lambertian: public Object {
     virtual void draw(const Scene& scene);
     static void cleanup();
 
-    void setTranslation(glm::vec3 m);
-    void setRotation(glm::vec3 m);
-    void setScale(glm::vec3 m);
+    void setTranslation(const glm::vec3& m);
+    void setRotation(const glm::vec3& m);
+    void setScale(const glm::vec3& m);
+
     const glm::vec3& getTranslation() const;
     const glm::vec3& getRotation() const;
     const glm::vec3& getScale() const;

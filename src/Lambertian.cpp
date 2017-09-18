@@ -103,18 +103,18 @@ void Lambertian::cleanup() {
   glDeleteShader(fragmentShader);
 }
 
-void Lambertian::setTranslation(glm::vec3 v) {
-  translation = (v);
+void Lambertian::setTranslation(const glm::vec3& v) {
+  translation = v;
   updateModel();
 }
 
-void Lambertian::setRotation(glm::vec3 v) {
-  rotation = (v);
+void Lambertian::setRotation(const glm::vec3& v) {
+  rotation = v;
   updateModel();
 }
 
-void Lambertian::setScale(glm::vec3 v) {
-  scale = (v);
+void Lambertian::setScale(const glm::vec3& v) {
+  scale = v;
   updateModel();
 }
 
