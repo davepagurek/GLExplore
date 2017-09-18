@@ -6,6 +6,9 @@ bool Lambertian::shaderProgramCompiled = false;
 unsigned int Lambertian::shaderProgram = 0;
 unsigned int Lambertian::vertexShader = 0;
 unsigned int Lambertian::fragmentShader = 0;
+const glm::vec3 Lambertian::xAxis(1, 0, 0);
+const glm::vec3 Lambertian::yAxis(0, 1, 0);
+const glm::vec3 Lambertian::zAxis(0, 0, 1);
 const char Lambertian::vertexSource[] =
 #include "shaders/vertex.glsl"
 ;
@@ -16,6 +19,10 @@ const char Lambertian::fragmentSource[] =
 
 Lambertian::Lambertian(Color diffuse, std::vector<float> vertices):
   vertices(std::move(vertices)),
+  model(glm::mat4()),
+  translation(glm::vec3(0, 0, 0)),
+  rotation(glm::vec3(0, 0, 0)),
+  scale(glm::vec3(1, 1, 1)),
   diffuse(diffuse)
 {
   generateBuffers();
@@ -50,13 +57,10 @@ void Lambertian::compileShaderProgram() throw(ShaderProgramCompilationError) {
 }
 
 void Lambertian::draw(const Scene& scene) {
-  // todo move this rotation out of here so it's more generic
-  glm::mat4 transformed = glm::rotate(model, (float)glfwGetTime(), glm::vec3(1.0f, 0.0f, 0.0f));
-  transformed = glm::rotate(transformed, (float)glfwGetTime(), glm::vec3(0.0f, 0.2f, 0.0f));
   glUseProgram(shaderProgram);
 
   unsigned int modelLoc = glGetUniformLocation(shaderProgram, "model");
-  glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(transformed));
+  glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
 
   unsigned int viewLoc = glGetUniformLocation(shaderProgram, "view");
   glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(scene.getView()));
@@ -97,4 +101,39 @@ void Lambertian::draw(const Scene& scene) {
 void Lambertian::cleanup() {
   glDeleteShader(vertexShader);
   glDeleteShader(fragmentShader);
+}
+
+void Lambertian::setTranslation(const glm::vec3& v) {
+  translation = v;
+  updateModel();
+}
+
+void Lambertian::setRotation(const glm::vec3& v) {
+  rotation = v;
+  updateModel();
+}
+
+void Lambertian::setScale(const glm::vec3& v) {
+  scale = v;
+  updateModel();
+}
+
+const glm::vec3& Lambertian::getTranslation() const {
+  return translation;
+}
+
+const glm::vec3& Lambertian::getRotation() const {
+  return rotation;
+}
+
+const glm::vec3& Lambertian::getScale() const {
+  return scale;
+}
+
+void Lambertian::updateModel() {
+  model = glm::translate(glm::mat4(), translation);
+  model = glm::rotate(model, rotation.x, xAxis);
+  model = glm::rotate(model, rotation.y, yAxis);
+  model = glm::rotate(model, rotation.z, zAxis);
+  model = glm::scale(model, scale);
 }

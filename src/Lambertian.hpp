@@ -27,15 +27,32 @@ class Lambertian: public Object {
     static void compileShaderProgramSource(const char vertexSource[], const char fragmentSource[]) throw(ShaderProgramCompilationError);
 
     void generateBuffers();
+    void updateModel();
+
+    glm::mat4 model;
+    glm::vec3 translation;
+    glm::vec3 rotation;
+    glm::vec3 scale;
+
+    static const glm::vec3 xAxis;
+    static const glm::vec3 yAxis;
+    static const glm::vec3 zAxis;
 
   public:
     static void compileShaderProgram() throw(ShaderProgramCompilationError);
-    glm::mat4 model;
     Color diffuse;
 
     Lambertian(Color diffuse, std::vector<float> vertices);
     virtual void draw(const Scene& scene);
     static void cleanup();
+
+    void setTranslation(const glm::vec3& m);
+    void setRotation(const glm::vec3& m);
+    void setScale(const glm::vec3& m);
+
+    const glm::vec3& getTranslation() const;
+    const glm::vec3& getRotation() const;
+    const glm::vec3& getScale() const;
 };
 
 #endif
