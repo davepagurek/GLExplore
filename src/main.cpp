@@ -136,8 +136,8 @@ void processInput(GLFWwindow *window, Scene &scene) {
   } else if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) {
     scene.moveCameraRight();
   } else if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) {
-    scene.moveCameraUp();
+    scene.moveCameraForward();
   } else if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) {
-    scene.moveCameraDown();
+    scene.moveCameraBackward();
   }
 }
