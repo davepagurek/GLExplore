@@ -89,10 +89,11 @@ int main() {
         -0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
         -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f
     });
+  rect.setTranslation(glm::vec3(-0.5, 0, 0));
 
   Lambertian rect2 = rect;
-  rect2.model = glm::scale(rect2.model, glm::vec3(0.5, 0.5, 0.5));
-  rect2.model = glm::translate(rect2.model, glm::vec3(3, 0.5, 0.5));
+  rect2.setScale(glm::vec3(0.5, 0.5, 0.5));
+  rect2.setTranslation(glm::vec3(1.0, 0.5, 0.5));
   rect2.diffuse = Color(0xFF8888);
 
   Scene scene(
@@ -101,12 +102,16 @@ int main() {
     glm::vec3(0.0f, 0.0f, 10.0f),
     Color(0x888888),
     {
-      {Color(0xFFFFFF), glm::vec3(0.5, 0.0, -1.0)}
+      {Color(0xFFDD33), glm::vec3(0.5, 0.0, -1.0)},
+      {Color(0x330066), glm::vec3(-3, 0.0, 2.0)}
     }
   );
 
   while(!glfwWindowShouldClose(window)) {
     processInput(window);
+
+    rect.setRotation(glm::vec3(0, glfwGetTime(), glfwGetTime()));
+    rect2.setRotation(glm::vec3(glfwGetTime(), glfwGetTime(), 0));
 
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
