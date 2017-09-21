@@ -11,7 +11,6 @@
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow *window, Scene &scene);
-std::string slurp(std::string filename);
 
 const float screenWidth = 800;
 const float screenHeight = 600;
