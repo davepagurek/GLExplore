@@ -22,3 +22,11 @@ unsigned int compileShader(const char source[], int type) throw(ShaderProgramCom
 
   return shader;
 }
+
+template<>
+GLenum numericTypeToEnum<GLfloat>() { return GL_FLOAT; }
+
+template<>
+GLenum numericTypeToEnum<GLint>() { return GL_INT; }
+
+// TODO: add more specializations
