@@ -18,6 +18,7 @@ const char Lambertian::fragmentSource[] =
 #include <iostream>
 
 Lambertian::Lambertian(Color diffuse, std::vector<float> vertices):
+  vertexBuffer({{3, 1}, {3, 1}}),
   vertices(std::move(vertices)),
   model(glm::mat4()),
   translation(glm::vec3(0, 0, 0)),
@@ -25,22 +26,7 @@ Lambertian::Lambertian(Color diffuse, std::vector<float> vertices):
   scale(glm::vec3(1, 1, 1)),
   diffuse(diffuse)
 {
-  generateBuffers();
-}
-
-void Lambertian::generateBuffers() {
-  glGenBuffers(1, &VBO);
-  glGenVertexArrays(1, &VAO);
-
-  glBindBuffer(GL_ARRAY_BUFFER, VBO);
-  glBufferData(GL_ARRAY_BUFFER, vertices.size()*sizeof(float), &vertices.front(), GL_STATIC_DRAW);
-
-  glBindVertexArray(VAO);
-
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
-  glEnableVertexAttribArray(0);
-  glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
-  glEnableVertexAttribArray(1);
+  vertexBuffer.generateBuffersFromData(&this->vertices);  
 }
 
 void Lambertian::compileShaderProgramSource(const char vertexSource[], const char fragmentSource[]) throw(ShaderProgramCompilationError) {
@@ -94,8 +80,9 @@ void Lambertian::draw(const Scene& scene) {
   unsigned int pointLightColorLoc = glGetUniformLocation(shaderProgram, "pointLightColor");
   glUniform3fv(pointLightColorLoc, 8, glm::value_ptr(pointLightColor[0]));
 
-  glBindVertexArray(VAO);
-  glDrawArrays(GL_TRIANGLES, 0, 36);//vertices.size()/6);
+  vertexBuffer.enableBuffer();
+  glDrawArrays(GL_TRIANGLES, 0, vertexBuffer.getNumVertices());
+  vertexBuffer.disableBuffer();
 }
 
 void Lambertian::cleanup() {
