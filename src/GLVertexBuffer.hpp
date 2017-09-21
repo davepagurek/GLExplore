@@ -11,9 +11,6 @@ class GLVertexBuffer {
     GLVertexBuffer(std::vector<std::pair<int, int>> dims)
       : attributeDimensions(std::move(dims))
     {
-      vertexAttribFirstPtr = vertexAttribNextPtr;             
-      vertexAttribNextPtr += attributeDimensions.size();
-
       for (const auto& dim : attributeDimensions) {
         strideLength += dim.first * dim.second;
       }
@@ -30,12 +27,9 @@ class GLVertexBuffer {
 
   private:
     std::vector<std::pair<int, int>> attributeDimensions;
-    int vertexAttribFirstPtr;
     int numVertices = 0;
     int strideLength = 0;   // independent of numeric type size
     unsigned int VBO, VAO;
-
-    static int vertexAttribNextPtr;
 };
 
 template <typename NumericType, size_t BufferSize>
@@ -46,18 +40,17 @@ void GLVertexBuffer::generateBuffersFromData(NumericType data[BufferSize]) {
   glGenVertexArrays(1, &VAO);
 
   glBindBuffer(GL_ARRAY_BUFFER, VBO);
-  glBufferData(GL_ARRAY_BUFFER, BufferSize*sizeof(float), data, GL_STATIC_DRAW);
+  glBufferData(GL_ARRAY_BUFFER, BufferSize*sizeof(NumericType), data, GL_STATIC_DRAW);
 
   glBindVertexArray(VAO);
 
   int offset = 0;
   for (unsigned int i = 0; i < attributeDimensions.size(); i++) {
-    GLuint currVertexAttrib = i + vertexAttribFirstPtr;
     GLint dimSize = attributeDimensions[i].first * attributeDimensions[i].second;
 
-    glVertexAttribPointer(currVertexAttrib, dimSize, numericTypeToEnum<NumericType>(),
-                          GL_FALSE, strideLength * sizeof(NumericType), (GLvoid*)offset);
-    glEnableVertexAttribArray(currVertexAttrib);
+    glVertexAttribPointer(i, dimSize, numericTypeToEnum<NumericType>(),
+                          GL_FALSE, strideLength*sizeof(NumericType), (GLvoid*)offset);
+    glEnableVertexAttribArray(i);
 
     offset += dimSize;
   }
