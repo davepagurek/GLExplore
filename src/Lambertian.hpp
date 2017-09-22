@@ -15,12 +15,10 @@
 
 class Lambertian: public Object {
   private:
-    GLShader shader;
+    GLShader* shader;
 
     GLVertexBuffer vertexBuffer;
     std::vector<float> vertices;
-
-    static void compileShaderProgramSource(const char vertexSource[], const char fragmentSource[]) throw(ShaderProgramCompilationError);
 
     void generateBuffers();
     void updateModel();
@@ -35,12 +33,10 @@ class Lambertian: public Object {
     static const glm::vec3 zAxis;
 
   public:
-    static void compileShaderProgram() throw(ShaderProgramCompilationError);
     Color diffuse;
 
-    Lambertian(Color diffuse, std::vector<float> vertices);
+    Lambertian(Color diffuse, std::vector<float> vertices, GLShader* shader);
     virtual void draw(const Scene& scene);
-    static void cleanup();
 
     void setTranslation(const glm::vec3& m);
     void setRotation(const glm::vec3& m);

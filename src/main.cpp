@@ -39,6 +39,7 @@ int main() {
   glEnable(GL_DEPTH_TEST);
 
   try {
+    GLShader lambertianShader("src/shaders/vertex.glsl", "src/shaders/fragment.glsl");
     Lambertian rect(Color(0xFFFFFF), {
         -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
          0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
@@ -81,7 +82,7 @@ int main() {
          0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
         -0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
         -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f
-    });
+    }, &lambertianShader);
     rect.setTranslation(glm::vec3(-0.5, 0, 0));
 
     Lambertian redRect = rect;
@@ -110,6 +111,7 @@ int main() {
       glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
       glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+      lambertianShader.useProgram();
       rect.draw(scene);
       redRect.draw(scene);
 
