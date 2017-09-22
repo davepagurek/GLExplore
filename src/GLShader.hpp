@@ -8,9 +8,11 @@ class GLShader {
     GLShader(const char* vertexShaderFile, const char* fragmentShaderFile);
     ~GLShader();
 
-    // should also declare
-    // * which inputs the vertex shader takes (with dimensions - need to look into passing in arrays as shader inputs)
-    // * uniform values to the pipeline (dimensions + array size)
+    void useProgram(); 
+    GLuint getUniformLocation(const char* uniformName);
+
+    // move shader uniform setting code here (may need to be templated with a bunch
+    // of explicit specializations)
 
   private:
     GLuint shaderProgram = -1;

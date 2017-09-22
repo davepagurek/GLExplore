@@ -39,13 +39,7 @@ int main() {
   glEnable(GL_DEPTH_TEST);
 
   try {
-    Lambertian::compileShaderProgram();
-  } catch (ShaderProgramCompilationError& e) {
-    std::cerr << e.getMessage() << std::endl;
-    exit(1);
-  }
-
-  Lambertian rect(Color(0xFFFFFF), {
+    Lambertian rect(Color(0xFFFFFF), {
         -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
          0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
          0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
@@ -88,42 +82,45 @@ int main() {
         -0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
         -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f
     });
-  rect.setTranslation(glm::vec3(-0.5, 0, 0));
+    rect.setTranslation(glm::vec3(-0.5, 0, 0));
 
-  Lambertian redRect = rect;
-  redRect.setScale(glm::vec3(0.5, 0.5, 0.5));
-  redRect.setTranslation(glm::vec3(1.0, 0.5, 0.5));
-  redRect.diffuse = Color(0xFF8888); // Red
+    Lambertian redRect = rect;
+    redRect.setScale(glm::vec3(0.5, 0.5, 0.5));
+    redRect.setTranslation(glm::vec3(1.0, 0.5, 0.5));
+    redRect.diffuse = Color(0xFF8888); // Red
 
-  Scene scene(
-    glm::perspective(glm::radians(45.0f), screenWidth / screenHeight, 0.1f, 100.0f),
-    glm::vec3(0.0f, 0.0f, -3.0f),
-    glm::vec3(0.0f, 0.0f, 10.0f),
-    Color(0x888888), // Grey
-    {
-      {Color(0xFFDD33), glm::vec3(0.5, 0.0, -1.0)}, // Orange
-      {Color(0x330066), glm::vec3(-3, 0.0, 2.0)} // Indigo
+    Scene scene(
+        glm::perspective(glm::radians(45.0f), screenWidth / screenHeight, 0.1f, 100.0f),
+        glm::vec3(0.0f, 0.0f, -3.0f),
+        glm::vec3(0.0f, 0.0f, 10.0f),
+        Color(0x888888), // Grey
+        {
+          {Color(0xFFDD33), glm::vec3(0.5, 0.0, -1.0)}, // Orange
+          {Color(0x330066), glm::vec3(-3, 0.0, 2.0)} // Indigo
+        }
+        );
+
+    while(!glfwWindowShouldClose(window)) {
+      processInput(window, scene);
+
+      float time = glfwGetTime();
+      rect.setRotation(glm::vec3(0, time, time));
+      redRect.setRotation(glm::vec3(time, time, 0));
+
+      glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+      glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+      rect.draw(scene);
+      redRect.draw(scene);
+
+      glfwSwapBuffers(window);
+      glfwPollEvents();
     }
-  );
-
-  while(!glfwWindowShouldClose(window)) {
-    processInput(window, scene);
-
-    float time = glfwGetTime();
-    rect.setRotation(glm::vec3(0, time, time));
-    redRect.setRotation(glm::vec3(time, time, 0));
-
-    glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-    rect.draw(scene);
-    redRect.draw(scene);
-
-    glfwSwapBuffers(window);
-    glfwPollEvents();
+  } catch (ShaderProgramCompilationError& e) {
+    std::cerr << e.getMessage() << std::endl;
+    exit(1);
   }
 
-  Lambertian::cleanup();
   glfwTerminate();
   return 0;
 

@@ -6,6 +6,7 @@
 #include "Color.hpp"
 #include "utils.hpp"
 #include "GLVertexBuffer.hpp"
+#include "GLShader.hpp"
 #include <string>
 #include <vector>
 #include <glm/glm.hpp>
@@ -14,13 +15,7 @@
 
 class Lambertian: public Object {
   private:
-    static bool shaderProgramCompiled;
-    static unsigned int shaderProgram;
-    static unsigned int vertexShader;
-    static unsigned int fragmentShader;
-
-    static const char vertexSource[];
-    static const char fragmentSource[];
+    GLShader shader;
 
     GLVertexBuffer vertexBuffer;
     std::vector<float> vertices;
