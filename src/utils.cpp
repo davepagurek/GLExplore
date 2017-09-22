@@ -1,5 +1,12 @@
 #include "utils.hpp"
 
+#include <iostream>
+#include <fstream>
+#include <sstream>
+#include <string>
+#include <vector>
+#include <algorithm>
+
 ShaderProgramCompilationError::ShaderProgramCompilationError(std::string message):
   message(message) {}
 
@@ -21,4 +28,22 @@ unsigned int compileShader(const char source[], int type) throw(ShaderProgramCom
   }
 
   return shader;
+}
+
+template<>
+GLenum numericTypeToEnum<GLfloat>() { return GL_FLOAT; }
+
+template<>
+GLenum numericTypeToEnum<GLint>() { return GL_INT; }
+
+// TODO: add more specializations
+
+std::string slurp(const char* filename) {
+  std::ifstream file(filename);
+  std::stringstream fileContentStream;
+  fileContentStream << file.rdbuf();
+
+  // Copy the file contents before returning
+  std::string fileContents = fileContentStream.str();
+  return fileContents;
 }

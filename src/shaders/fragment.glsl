@@ -1,4 +1,3 @@
-R"(
 #version 330 core
 uniform vec3 objectColor;
 uniform vec3 ambientColor;
@@ -37,4 +36,3 @@ void main() {
   }
   FragColor = vec4(color, 1.0f);
 }
-)"

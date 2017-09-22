@@ -1,23 +1,15 @@
 #include "Lambertian.hpp"
 #include <GLFW/glfw3.h>
 #include <utility>
+#include <iostream>
 
-bool Lambertian::shaderProgramCompiled = false;
-unsigned int Lambertian::shaderProgram = 0;
-unsigned int Lambertian::vertexShader = 0;
-unsigned int Lambertian::fragmentShader = 0;
 const glm::vec3 Lambertian::xAxis(1, 0, 0);
 const glm::vec3 Lambertian::yAxis(0, 1, 0);
 const glm::vec3 Lambertian::zAxis(0, 0, 1);
-const char Lambertian::vertexSource[] =
-#include "shaders/vertex.glsl"
-;
-const char Lambertian::fragmentSource[] =
-#include "shaders/fragment.glsl"
-;
-#include <iostream>
 
-Lambertian::Lambertian(Color diffuse, std::vector<float> vertices):
+Lambertian::Lambertian(Color diffuse, std::vector<float> vertices, GLShader* shader):
+  shader(shader),
+  vertexBuffer({{3, 1}, {3, 1}}),
   vertices(std::move(vertices)),
   model(glm::mat4()),
   translation(glm::vec3(0, 0, 0)),
@@ -25,59 +17,29 @@ Lambertian::Lambertian(Color diffuse, std::vector<float> vertices):
   scale(glm::vec3(1, 1, 1)),
   diffuse(diffuse)
 {
-  generateBuffers();
-}
-
-void Lambertian::generateBuffers() {
-  glGenBuffers(1, &VBO);
-  glGenVertexArrays(1, &VAO);
-
-  glBindBuffer(GL_ARRAY_BUFFER, VBO);
-  glBufferData(GL_ARRAY_BUFFER, vertices.size()*sizeof(float), &vertices.front(), GL_STATIC_DRAW);
-
-  glBindVertexArray(VAO);
-
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
-  glEnableVertexAttribArray(0);
-  glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
-  glEnableVertexAttribArray(1);
-}
-
-void Lambertian::compileShaderProgramSource(const char vertexSource[], const char fragmentSource[]) throw(ShaderProgramCompilationError) {
-  vertexShader = compileShader(vertexSource, GL_VERTEX_SHADER);
-  fragmentShader = compileShader(fragmentSource, GL_FRAGMENT_SHADER);
-  shaderProgram = glCreateProgram();
-  glAttachShader(shaderProgram, vertexShader);
-  glAttachShader(shaderProgram, fragmentShader);
-  glLinkProgram(shaderProgram);
-}
-
-void Lambertian::compileShaderProgram() throw(ShaderProgramCompilationError) {
-  compileShaderProgramSource(vertexSource, fragmentSource);
+  vertexBuffer.generateBuffersFromData(&this->vertices);  
 }
 
 void Lambertian::draw(const Scene& scene) {
-  glUseProgram(shaderProgram);
-
-  unsigned int modelLoc = glGetUniformLocation(shaderProgram, "model");
+  unsigned int modelLoc = shader->getUniformLocation("model");
   glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
 
-  unsigned int viewLoc = glGetUniformLocation(shaderProgram, "view");
+  unsigned int viewLoc = shader->getUniformLocation("view");
   glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(scene.getView()));
 
-  unsigned int projectionLoc = glGetUniformLocation(shaderProgram, "projection");
+  unsigned int projectionLoc = shader->getUniformLocation("projection");
   glUniformMatrix4fv(projectionLoc, 1, GL_FALSE, glm::value_ptr(scene.getProjection()));
 
-  unsigned int cameraPosLoc = glGetUniformLocation(shaderProgram, "cameraPos");
+  unsigned int cameraPosLoc = shader->getUniformLocation("cameraPos");
   glUniform3f(cameraPosLoc, scene.getCameraPos().x, scene.getCameraPos().y, scene.getCameraPos().z);
 
-  unsigned int objectColorLoc = glGetUniformLocation(shaderProgram, "objectColor");
+  unsigned int objectColorLoc = shader->getUniformLocation("objectColor");
   glUniform3f(objectColorLoc, diffuse.r(), diffuse.g(), diffuse.b());
 
-  unsigned int ambientColorLoc = glGetUniformLocation(shaderProgram, "ambientColor");
+  unsigned int ambientColorLoc = shader->getUniformLocation("ambientColor");
   glUniform3f(ambientColorLoc, scene.getAmbientLight().r(), scene.getAmbientLight().g(), scene.getAmbientLight().b());
 
-  unsigned int numPointLightsLoc = glGetUniformLocation(shaderProgram, "numPointLights");
+  unsigned int numPointLightsLoc = shader->getUniformLocation("numPointLights");
   glUniform1i(numPointLightsLoc, scene.getPointLights().size());
 
   glm::vec3 pointLightLocation[8];
@@ -88,19 +50,15 @@ void Lambertian::draw(const Scene& scene) {
     pointLightColor[i] = glm::vec3(p.color.r(), p.color.g(), p.color.b());
   }
 
-  unsigned int pointLightLocationLoc = glGetUniformLocation(shaderProgram, "pointLightLocation");
+  unsigned int pointLightLocationLoc = shader->getUniformLocation("pointLightLocation");
   glUniform3fv(pointLightLocationLoc, 8, glm::value_ptr(pointLightLocation[0]));
 
-  unsigned int pointLightColorLoc = glGetUniformLocation(shaderProgram, "pointLightColor");
+  unsigned int pointLightColorLoc = shader->getUniformLocation("pointLightColor");
   glUniform3fv(pointLightColorLoc, 8, glm::value_ptr(pointLightColor[0]));
 
-  glBindVertexArray(VAO);
-  glDrawArrays(GL_TRIANGLES, 0, 36);//vertices.size()/6);
-}
-
-void Lambertian::cleanup() {
-  glDeleteShader(vertexShader);
-  glDeleteShader(fragmentShader);
+  vertexBuffer.enableBuffer();
+  glDrawArrays(GL_TRIANGLES, 0, vertexBuffer.getNumVertices());
+  vertexBuffer.disableBuffer();
 }
 
 void Lambertian::setTranslation(const glm::vec3& v) {
