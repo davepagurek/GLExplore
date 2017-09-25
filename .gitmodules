@@ -1,0 +1,3 @@
+[submodule "src/third_party/PerlinNoise"]
+	path = src/third_party/PerlinNoise
+	url = https://github.com/Reputeless/PerlinNoise.git
