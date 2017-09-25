@@ -17,48 +17,6 @@ void processInput(GLFWwindow *window, Scene &scene);
 const float screenWidth = 800;
 const float screenHeight = 600;
 
-std::vector<float> addNormals(const std::vector<float>& vertices) {
-  std::vector<float> withNormals;
-  for (int i = 0; i < vertices.size(); i += 9) {
-    float x1 = vertices[i];
-    float y1 = vertices[i+1];
-    float z1 = vertices[i+2];
-    float x2 = vertices[i+3];
-    float y2 = vertices[i+4];
-    float z2 = vertices[i+5];
-    float x3 = vertices[i+6];
-    float y3 = vertices[i+7];
-    float z3 = vertices[i+8];
-
-    glm::vec3 v1(x3-x2, y3-y2, z3-z2);
-    glm::vec3 v2(x3-x1, y3-y1, z3-z1);
-    glm::vec3 normal = glm::normalize(glm::cross(v1, v2));
-
-    withNormals.push_back(x1);
-    withNormals.push_back(y1);
-    withNormals.push_back(z1);
-    withNormals.push_back(normal.x);
-    withNormals.push_back(normal.y);
-    withNormals.push_back(normal.z);
-
-    withNormals.push_back(x2);
-    withNormals.push_back(y2);
-    withNormals.push_back(z2);
-    withNormals.push_back(normal.x);
-    withNormals.push_back(normal.y);
-    withNormals.push_back(normal.z);
-
-    withNormals.push_back(x3);
-    withNormals.push_back(y3);
-    withNormals.push_back(z3);
-    withNormals.push_back(normal.x);
-    withNormals.push_back(normal.y);
-    withNormals.push_back(normal.z);
-  }
-
-  return withNormals;
-}
-
 std::vector<float> genGround(int depth, int octaves) {
   siv::PerlinNoise noise(std::time(nullptr));
   std::vector<std::vector<float>> heights;
@@ -142,9 +100,11 @@ int main() {
 
   glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
   glEnable(GL_DEPTH_TEST);
+  glCullFace(GL_BACK);
 
   try {
     GLShader lambertianShader("src/shaders/vertex.glsl", "src/shaders/fragment.glsl");
+    /*
     Lambertian rect(Color(0xFFFFFF), {
         -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
          0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
@@ -188,6 +148,50 @@ int main() {
         -0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
         -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f
     }, &lambertianShader);
+    */
+    Lambertian rect(Color(0xFFFFFF), addNormals({
+        -0.5f, -0.5f, -0.5f,
+         0.5f, -0.5f, -0.5f,
+         0.5f,  0.5f, -0.5f,
+         0.5f,  0.5f, -0.5f,
+        -0.5f,  0.5f, -0.5f,
+        -0.5f, -0.5f, -0.5f,
+
+         0.5f,  0.5f,  0.5f,
+         0.5f, -0.5f,  0.5f,
+        -0.5f, -0.5f,  0.5f,
+        -0.5f, -0.5f,  0.5f,
+        -0.5f,  0.5f,  0.5f,
+         0.5f,  0.5f,  0.5f,
+
+        -0.5f,  0.5f,  0.5f,
+        -0.5f,  0.5f, -0.5f,
+        -0.5f, -0.5f, -0.5f,
+        -0.5f, -0.5f, -0.5f,
+        -0.5f, -0.5f,  0.5f,
+        -0.5f,  0.5f,  0.5f,
+
+         0.5f,  0.5f,  0.5f,
+         0.5f,  0.5f, -0.5f,
+         0.5f, -0.5f, -0.5f,
+         0.5f, -0.5f, -0.5f,
+         0.5f, -0.5f,  0.5f,
+         0.5f,  0.5f,  0.5f,
+
+        -0.5f, -0.5f, -0.5f,
+         0.5f, -0.5f, -0.5f,
+         0.5f, -0.5f,  0.5f,
+         0.5f, -0.5f,  0.5f,
+        -0.5f, -0.5f,  0.5f,
+        -0.5f, -0.5f, -0.5f,
+
+        -0.5f,  0.5f, -0.5f,
+         0.5f,  0.5f, -0.5f,
+         0.5f,  0.5f,  0.5f,
+         0.5f,  0.5f,  0.5f,
+        -0.5f,  0.5f,  0.5f,
+        -0.5f,  0.5f, -0.5f
+    }), &lambertianShader);
     rect.setTranslation(glm::vec3(-0.5, 0, 0));
 
     Lambertian redRect = rect;
@@ -200,15 +204,15 @@ int main() {
     ground.setTranslation(glm::vec3(0, -4, -3));
 
     Scene scene(
-        glm::perspective(glm::radians(45.0f), screenWidth / screenHeight, 0.1f, 100.0f),
-        glm::vec3(0.0f, 0.0f, 10.0f),
-        glm::vec3(0.0f, 0.0f, 0.0f),
-        Color(0x888888), // Grey
-        {
-          {Color(0xFFDD33), glm::vec3(0.5, 0.0, 1.0)}, // Orange
-          {Color(0x330066), glm::vec3(-3, 0.0, -2.0)} // Indigo
-        }
-        );
+      glm::perspective(glm::radians(45.0f), screenWidth / screenHeight, 0.1f, 100.0f),
+      glm::vec3(0.0f, 0.0f, 10.0f),
+      glm::vec3(0.0f, 0.0f, 0.0f),
+      Color(0x888888), // Grey
+      {
+        {Color(0xFFDD33), glm::vec3(0.5, 0.0, 1.0)}, // Orange
+        {Color(0x330066), glm::vec3(-3, 0.0, -2.0)} // Indigo
+      }
+    );
 
     while(!glfwWindowShouldClose(window)) {
       processInput(window, scene);
