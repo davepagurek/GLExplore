@@ -4,10 +4,12 @@
 #include <string>
 #include <fstream>
 #include <streambuf>
+#include <ctime>
 
 #include "Lambertian.hpp"
 #include "Color.hpp"
 #include "Scene.hpp"
+#include "geometry.hpp"
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow *window, Scene &scene);
@@ -37,83 +39,47 @@ int main() {
 
   glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
   glEnable(GL_DEPTH_TEST);
+  glCullFace(GL_BACK);
 
   try {
     GLShader lambertianShader("src/shaders/vertex.glsl", "src/shaders/fragment.glsl");
-    Lambertian rect(Color(0xFFFFFF), {
-        -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-         0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-         0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-         0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-        -0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-        -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
 
-        -0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
-         0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
-         0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
-         0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
-        -0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
-        -0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
-
-        -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
-        -0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
-        -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
-        -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
-        -0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
-        -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
-
-         0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
-         0.5f,  0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
-         0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
-         0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
-         0.5f, -0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
-         0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
-
-        -0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
-         0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
-         0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
-         0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
-        -0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
-        -0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
-
-        -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
-         0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
-         0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
-         0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
-        -0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
-        -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f
-    }, &lambertianShader);
+    Lambertian rect(Color(0xFFFFFF), cube(), &lambertianShader); // White
     rect.setTranslation(glm::vec3(-0.5, 0, 0));
 
-    Lambertian redRect = rect;
-    redRect.setScale(glm::vec3(0.5, 0.5, 0.5));
-    redRect.setTranslation(glm::vec3(1.0, 0.5, 0.5));
-    redRect.diffuse = Color(0xFF8888); // Red
+    Lambertian redSphere(Color(0xFF8888), sphere(), &lambertianShader); // Red
+    redSphere.setScale(glm::vec3(0.5, 0.5, 0.5));
+    redSphere.setTranslation(glm::vec3(1.0, 0.5, -0.5));
+
+    Lambertian ground(Color(0x6EB56E), hills(80, 6), &lambertianShader); // Green
+    ground.setScale(glm::vec3(40, 40, 3));
+    ground.setTranslation(glm::vec3(0, -4, -3));
 
     Scene scene(
-        glm::perspective(glm::radians(45.0f), screenWidth / screenHeight, 0.1f, 100.0f),
-        glm::vec3(0.0f, 0.0f, -3.0f),
-        glm::vec3(0.0f, 0.0f, 10.0f),
-        Color(0x888888), // Grey
-        {
-          {Color(0xFFDD33), glm::vec3(0.5, 0.0, -1.0)}, // Orange
-          {Color(0x330066), glm::vec3(-3, 0.0, 2.0)} // Indigo
-        }
-        );
+      glm::perspective(glm::radians(45.0f), screenWidth / screenHeight, 0.1f, 100.0f),
+      glm::vec3(0.0f, 0.0f, 20.0f),
+      glm::vec3(0.0f, 0.0f, 0.0f),
+      Color(0x888888), // Grey
+      {
+        {Color(0xFFDD33), glm::vec3(0.5, 0.0, 1.0)}, // Orange
+        {Color(0x330066), glm::vec3(-3, 0.0, -2.0)} // Indigo
+      }
+    );
 
     while(!glfwWindowShouldClose(window)) {
       processInput(window, scene);
 
       float time = glfwGetTime();
       rect.setRotation(glm::vec3(0, time, time));
-      redRect.setRotation(glm::vec3(time, time, 0));
+      redSphere.setRotation(glm::vec3(time, time, 0));
 
       glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
       glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
       lambertianShader.useProgram();
       rect.draw(scene);
-      redRect.draw(scene);
+      redSphere.draw(scene);
+      ground.draw(scene);
 
       glfwSwapBuffers(window);
       glfwPollEvents();

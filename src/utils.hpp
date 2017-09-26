@@ -3,6 +3,7 @@
 
 #include <glad/glad.h>
 #include <string>
+#include <vector>
 
 class ShaderProgramCompilationError {
   private:
@@ -22,5 +23,9 @@ GLenum numericTypeToEnum() { throw GLNumericTypeError(); }
 
 // Read the entire contents of a file.
 std::string slurp(const char* filename);
+
+
+// Take a float array of face vertex coordinates and insert normals after each vertex
+std::vector<float> addNormals(const std::vector<float>& vertices);
 
 #endif
