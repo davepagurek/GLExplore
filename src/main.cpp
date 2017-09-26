@@ -17,8 +17,6 @@ void processInput(GLFWwindow *window, Scene &scene);
 const float screenWidth = 800;
 const float screenHeight = 600;
 
-
-
 int main() {
   glfwInit();
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);

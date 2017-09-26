@@ -11,10 +11,15 @@ std::vector<float> hills(int depth, int octaves) {
   siv::PerlinNoise noise(std::time(nullptr));
   std::vector<std::vector<float>> heights;
   std::vector<float> vertices;
+
+  // Create a grid of height values
   for (int i = 0; i < depth; i++) {
     heights.push_back(std::vector<float>());
     for (int j = 0; j < depth; j++) {
+      // Generate perlin noise for this x,z coordinate
       float height = noise.octaveNoise0_1(((float)i)/((float)depth-1.0), ((float)j)/((float)depth-1.0), octaves) - 0.5;
+
+      // Pull down the edges
       height -= std::pow(
         std::sqrt(
           std::pow(-0.5 + ((float)i)*(1.0/((float)depth-1.0)),2) +
@@ -22,10 +27,12 @@ std::vector<float> hills(int depth, int octaves) {
         ) / 0.75,
         2
       );
+
       heights[heights.size()-1].push_back(height);
     }
   }
 
+  // Create triangle faces out of the height grid
   for (int i = 0; i < heights.size()-1; i++) {
     for (int j = 0; j < heights[i].size()-1; j++) {
       float x1 = -0.5 + ((float)i)*(1.0/((float)depth-1.0));
@@ -122,7 +129,7 @@ std::vector<float> cube() {
 }
 
 std::vector<float> sphere() {
-  static float vertexLocations[] = {
+  static constexpr float vertexLocations[] = {
     0, -0.525731, 0.850651,             // vertices[0]
     0.850651, 0, 0.525731,              // vertices[1]
     0.850651, 0, -0.525731,             // vertices[2]
@@ -136,7 +143,7 @@ std::vector<float> sphere() {
     0, 0.525731, -0.850651,             // vertices[10]
     0, 0.525731, 0.850651              // vertices[11]
   };
-  static int vertexIndices[] = {
+  static constexpr int vertexIndices[] = {
     6, 2, 1,
     2, 7, 1,
     5, 4, 3,
