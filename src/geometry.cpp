@@ -15,6 +15,13 @@ std::vector<float> hills(int depth, int octaves) {
     heights.push_back(std::vector<float>());
     for (int j = 0; j < depth; j++) {
       float height = noise.octaveNoise0_1(((float)i)/((float)depth-1.0), ((float)j)/((float)depth-1.0), octaves) - 0.5;
+      height -= std::pow(
+        std::sqrt(
+          std::pow(-0.5 + ((float)i)*(1.0/((float)depth-1.0)),2) +
+          std::pow(-0.5 + ((float)j)*(1.0/((float)depth-1.0)),2)
+        ) / 0.75,
+        2
+      );
       heights[heights.size()-1].push_back(height);
     }
   }
@@ -114,23 +121,8 @@ std::vector<float> cube() {
   });
 }
 
-namespace {
-  glm::vec3 normalize(const glm::vec3 a, const glm::vec3 b) {
-    float length = 1.0;
-    float dx = b.x - a.x;
-    float dy = b.y - a.y;
-    float dz = b.z - a.z;
-    float distance = glm::distance(a,b);
-    dx *= length / distance;
-    dy *= length / distance;
-    dz *= length / distance;
-
-    return glm::vec3(a.x+dx, a.y+dy, a.z+dz);
-  }
-}
-
 std::vector<float> sphere() {
-  float vertexLocations[] = {
+  static float vertexLocations[] = {
     0, -0.525731, 0.850651,             // vertices[0]
     0.850651, 0, 0.525731,              // vertices[1]
     0.850651, 0, -0.525731,             // vertices[2]
@@ -144,7 +136,7 @@ std::vector<float> sphere() {
     0, 0.525731, -0.850651,             // vertices[10]
     0, 0.525731, 0.850651              // vertices[11]
   };
-  int vertexIndices[] = {
+  static int vertexIndices[] = {
     6, 2, 1,
     2, 7, 1,
     5, 4, 3,
@@ -172,6 +164,8 @@ std::vector<float> sphere() {
     vertices.push_back(vertexLocations[i*3+1]); // y
     vertices.push_back(vertexLocations[i*3+2]); // z
   }
+
+  // TODO: Accept a subdivision parameter and subdivide to make an icososphere
 
   return addNormals(vertices);
 }

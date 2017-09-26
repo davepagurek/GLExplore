@@ -53,13 +53,13 @@ int main() {
     redSphere.setScale(glm::vec3(0.5, 0.5, 0.5));
     redSphere.setTranslation(glm::vec3(1.0, 0.5, -0.5));
 
-    Lambertian ground(Color(0x6EB56E), hills(40, 3), &lambertianShader); // Green
-    ground.setScale(glm::vec3(20, 20, 5));
+    Lambertian ground(Color(0x6EB56E), hills(80, 6), &lambertianShader); // Green
+    ground.setScale(glm::vec3(40, 40, 3));
     ground.setTranslation(glm::vec3(0, -4, -3));
 
     Scene scene(
       glm::perspective(glm::radians(45.0f), screenWidth / screenHeight, 0.1f, 100.0f),
-      glm::vec3(0.0f, 0.0f, 10.0f),
+      glm::vec3(0.0f, 0.0f, 20.0f),
       glm::vec3(0.0f, 0.0f, 0.0f),
       Color(0x888888), // Grey
       {
