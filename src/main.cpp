@@ -9,7 +9,7 @@
 #include "Lambertian.hpp"
 #include "Color.hpp"
 #include "Scene.hpp"
-#include "third_party/PerlinNoise/PerlinNoise.hpp"
+#include "geometry.hpp"
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow *window, Scene &scene);
@@ -17,66 +17,7 @@ void processInput(GLFWwindow *window, Scene &scene);
 const float screenWidth = 800;
 const float screenHeight = 600;
 
-std::vector<float> genGround(int depth, int octaves) {
-  siv::PerlinNoise noise(std::time(nullptr));
-  std::vector<std::vector<float>> heights;
-  std::vector<float> vertices;
-  for (int i = 0; i < depth; i++) {
-    heights.push_back(std::vector<float>());
-    for (int j = 0; j < depth; j++) {
-      float height = noise.octaveNoise0_1(((float)i)/((float)depth-1.0), ((float)j)/((float)depth-1.0), octaves) - 0.5;
-      heights[heights.size()-1].push_back(height);
-    }
-  }
 
-  for (int i = 0; i < heights.size()-1; i++) {
-    for (int j = 0; j < heights[i].size()-1; j++) {
-      float x1 = -0.5 + ((float)i)*(1.0/((float)depth-1.0));
-      float z1 = -0.5 + ((float)j)*(1.0/((float)depth-1.0));
-      float y1 = heights[i][j];
-
-      float x2 = -0.5 + ((float)(i+1))*(1.0/((float)depth-1.0));
-      float z2 = -0.5 + ((float)j)*(1.0/((float)depth-1.0));
-      float y2 = heights[i+1][j];
-
-      float x3 = -0.5 + ((float)i)*(1.0/((float)depth-1.0));
-      float z3 = -0.5 + ((float)(j+1))*(1.0/((float)depth-1.0));
-      float y3 = heights[i][j+1];
-
-      float x4 = -0.5 + ((float)(i+1))*(1.0/((float)depth-1.0));
-      float z4 = -0.5 + ((float)(j+1))*(1.0/((float)depth-1.0));
-      float y4 = heights[i+1][j+1];
-
-      // Triangle 1
-      vertices.push_back(x1);
-      vertices.push_back(y1);
-      vertices.push_back(z1);
-
-      vertices.push_back(x2);
-      vertices.push_back(y2);
-      vertices.push_back(z2);
-
-      vertices.push_back(x3);
-      vertices.push_back(y3);
-      vertices.push_back(z3);
-
-      // Triangle 2
-      vertices.push_back(x4);
-      vertices.push_back(y4);
-      vertices.push_back(z4);
-
-      vertices.push_back(x3);
-      vertices.push_back(y3);
-      vertices.push_back(z3);
-
-      vertices.push_back(x2);
-      vertices.push_back(y2);
-      vertices.push_back(z2);
-    }
-  }
-
-  return addNormals(vertices);
-}
 
 int main() {
   glfwInit();
@@ -104,102 +45,15 @@ int main() {
 
   try {
     GLShader lambertianShader("src/shaders/vertex.glsl", "src/shaders/fragment.glsl");
-    /*
-    Lambertian rect(Color(0xFFFFFF), {
-        -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-         0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-         0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-         0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-        -0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-        -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
 
-        -0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
-         0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
-         0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
-         0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
-        -0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
-        -0.5f, -0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
-
-        -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
-        -0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
-        -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
-        -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
-        -0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
-        -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
-
-         0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
-         0.5f,  0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
-         0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
-         0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
-         0.5f, -0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
-         0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
-
-        -0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
-         0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
-         0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
-         0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
-        -0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
-        -0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
-
-        -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
-         0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
-         0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
-         0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
-        -0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
-        -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f
-    }, &lambertianShader);
-    */
-    Lambertian rect(Color(0xFFFFFF), addNormals({
-        -0.5f, -0.5f, -0.5f,
-         0.5f, -0.5f, -0.5f,
-         0.5f,  0.5f, -0.5f,
-         0.5f,  0.5f, -0.5f,
-        -0.5f,  0.5f, -0.5f,
-        -0.5f, -0.5f, -0.5f,
-
-         0.5f,  0.5f,  0.5f,
-         0.5f, -0.5f,  0.5f,
-        -0.5f, -0.5f,  0.5f,
-        -0.5f, -0.5f,  0.5f,
-        -0.5f,  0.5f,  0.5f,
-         0.5f,  0.5f,  0.5f,
-
-        -0.5f,  0.5f,  0.5f,
-        -0.5f,  0.5f, -0.5f,
-        -0.5f, -0.5f, -0.5f,
-        -0.5f, -0.5f, -0.5f,
-        -0.5f, -0.5f,  0.5f,
-        -0.5f,  0.5f,  0.5f,
-
-         0.5f,  0.5f,  0.5f,
-         0.5f,  0.5f, -0.5f,
-         0.5f, -0.5f, -0.5f,
-         0.5f, -0.5f, -0.5f,
-         0.5f, -0.5f,  0.5f,
-         0.5f,  0.5f,  0.5f,
-
-        -0.5f, -0.5f, -0.5f,
-         0.5f, -0.5f, -0.5f,
-         0.5f, -0.5f,  0.5f,
-         0.5f, -0.5f,  0.5f,
-        -0.5f, -0.5f,  0.5f,
-        -0.5f, -0.5f, -0.5f,
-
-        -0.5f,  0.5f, -0.5f,
-         0.5f,  0.5f, -0.5f,
-         0.5f,  0.5f,  0.5f,
-         0.5f,  0.5f,  0.5f,
-        -0.5f,  0.5f,  0.5f,
-        -0.5f,  0.5f, -0.5f
-    }), &lambertianShader);
+    Lambertian rect(Color(0xFFFFFF), cube(), &lambertianShader); // White
     rect.setTranslation(glm::vec3(-0.5, 0, 0));
 
-    Lambertian redRect = rect;
-    redRect.setScale(glm::vec3(0.5, 0.5, 0.5));
-    redRect.setTranslation(glm::vec3(1.0, 0.5, -0.5));
-    redRect.diffuse = Color(0xFF8888); // Red
+    Lambertian redSphere(Color(0xFF8888), sphere(), &lambertianShader); // Red
+    redSphere.setScale(glm::vec3(0.5, 0.5, 0.5));
+    redSphere.setTranslation(glm::vec3(1.0, 0.5, -0.5));
 
-    Lambertian ground(Color(0x6EB56E), genGround(40, 3), &lambertianShader); // Green
+    Lambertian ground(Color(0x6EB56E), hills(40, 3), &lambertianShader); // Green
     ground.setScale(glm::vec3(20, 20, 5));
     ground.setTranslation(glm::vec3(0, -4, -3));
 
@@ -219,14 +73,14 @@ int main() {
 
       float time = glfwGetTime();
       rect.setRotation(glm::vec3(0, time, time));
-      redRect.setRotation(glm::vec3(time, time, 0));
+      redSphere.setRotation(glm::vec3(time, time, 0));
 
       glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
       glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
       lambertianShader.useProgram();
       rect.draw(scene);
-      redRect.draw(scene);
+      redSphere.draw(scene);
       ground.draw(scene);
 
       glfwSwapBuffers(window);
