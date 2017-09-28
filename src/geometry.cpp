@@ -170,9 +170,14 @@ std::vector<float> sphere() {
     vertices.push_back(vertexLocations[i*3]); // x
     vertices.push_back(vertexLocations[i*3+1]); // y
     vertices.push_back(vertexLocations[i*3+2]); // z
+
+    // Since this is a unit sphere, normals == positions
+    vertices.push_back(vertexLocations[i*3]); // nx
+    vertices.push_back(vertexLocations[i*3+1]); // ny
+    vertices.push_back(vertexLocations[i*3+2]); // nz
   }
 
   // TODO: Accept a subdivision parameter and subdivide to make an icososphere
 
-  return addNormals(vertices);
+  return vertices;
 }
