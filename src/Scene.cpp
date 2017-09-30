@@ -38,26 +38,26 @@ const std::vector<PointLight>& Scene::getPointLights() const {
 // Camera movement
 
 void Scene::moveCameraLeft() {
-  cameraPos.x += 0.05;
-  cameraTarget.x += 0.05;
-  setView();
-}
-
-void Scene::moveCameraRight() {
   cameraPos.x -= 0.05;
   cameraTarget.x -= 0.05;
   setView();
 }
 
+void Scene::moveCameraRight() {
+  cameraPos.x += 0.05;
+  cameraTarget.x += 0.05;
+  setView();
+}
+
 void Scene::moveCameraForward() {
-  cameraPos.z += 0.05;
-  cameraTarget.z += 0.05;
+  cameraPos.z -= 0.05;
+  cameraTarget.z -= 0.05;
   setView();
 }
 
 void Scene::moveCameraBackward() {
-  cameraPos.z -= 0.05;
-  cameraTarget.z -= 0.05;
+  cameraPos.z += 0.05;
+  cameraTarget.z += 0.05;
   setView();
 }
 
