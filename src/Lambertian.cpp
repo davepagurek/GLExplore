@@ -61,6 +61,15 @@ void Lambertian::draw(const Scene& scene) {
   vertexBuffer.disableBuffer();
 }
 
+void Lambertian::shadow(const Scene& scene, GLShader& shadowShader) {
+  unsigned int modelLoc = shadowShader.getUniformLocation("model");
+  glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+
+  vertexBuffer.enableBuffer();
+  glDrawArrays(GL_TRIANGLES, 0, vertexBuffer.getNumVertices());
+  vertexBuffer.disableBuffer();
+}
+
 void Lambertian::setTranslation(const glm::vec3& v) {
   translation = v;
   updateModel();
