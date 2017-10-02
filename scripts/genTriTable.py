@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 """
 Generate the table of triangle vertices used in the marching cubes algorithm.
 The cube's vertices and edges are numbered as follows:
@@ -14,6 +15,8 @@ The cube's vertices and edges are numbered as follows:
 |/            |/
 0 ---- 0 ---- 1
 """
+
+import itertools
 
 vertexNeighbours = [
     set([1, 2, 4]),
@@ -57,6 +60,7 @@ def getEdge(v1, v2):
 def getNeighbourEdges(v, ns):
     return set(map(lambda x : getEdge(v, x), ns))
 
+print('int triTable[][] = {')
 for i in range(256):
     verticesBelow = set()
     for j in range(8):
@@ -206,4 +210,6 @@ for i in range(256):
             visited.add(v3)
             visited.add(v4)
 
-    print(triangles)
+    print('  { %s },' % ', '.join(map(str, list(itertools.chain.from_iterable(triangles)) + [-1]*(13 - len(triangles)*3))))
+
+print('};')
