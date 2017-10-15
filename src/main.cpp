@@ -52,8 +52,8 @@ int main() {
     redSphere.setTranslation(glm::vec3(1.0, 0.5, -0.5));
 
     Lambertian ground(Color(0x6EB56E), hills(80, 6), &lambertianShader); // Green
-    ground.setScale(glm::vec3(40, 40, 3));
-    ground.setTranslation(glm::vec3(0, -4, -3));
+    ground.setScale(glm::vec3(40, 40, 40));
+    ground.setTranslation(glm::vec3(0, -4, -10));
 
     Scene scene(
       glm::perspective(glm::radians(45.0f), screenWidth / screenHeight, 0.1f, 100.0f),
@@ -64,7 +64,7 @@ int main() {
         {Color(0xB59D24), glm::vec3(0.5, 2.0, 10.0)}, // Orange
         {Color(0x330066), glm::vec3(-3, 0.0, -2.0)} // Indigo
       },
-      25.0f
+      100.0f
     );
 
     glm::vec3 lightPos = scene.getPointLights()[0].location;
