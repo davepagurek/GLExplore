@@ -41,8 +41,7 @@ const std::vector<PointLight>& Scene::getPointLights() const {
 void Scene::moveCameraLeft() {
   float PI_BY_2 = glm::pi<float>() / 2.0;
   glm::vec3 dir = glm::normalize(cameraTarget - cameraPos);
-  dir = glm::rotateY(dir, PI_BY_2);
-  dir *= 0.05;
+  dir = glm::rotateY(dir, PI_BY_2) * stepSize;
   cameraTarget += dir;
   cameraPos += dir;
   setView();
@@ -51,22 +50,21 @@ void Scene::moveCameraLeft() {
 void Scene::moveCameraRight() {
   float PI_BY_2 = glm::pi<float>() / 2.0;
   glm::vec3 dir = glm::normalize(cameraTarget - cameraPos);
-  dir = glm::rotateY(dir, PI_BY_2);
-  dir *= 0.05;
+  dir = glm::rotateY(dir, -1 * PI_BY_2) * stepSize;
   cameraTarget += dir;
   cameraPos += dir;
   setView();
 }
 
 void Scene::moveCameraForward() {
-  glm::vec3 direction = glm::normalize(cameraTarget - cameraPos) * 0.05;
+  glm::vec3 direction = glm::normalize(cameraTarget - cameraPos) * stepSize;
   cameraPos += direction;
   cameraTarget += direction;
   setView();
 }
 
 void Scene::moveCameraBackward() {
-  glm::vec3 direction = glm::normalize(cameraTarget - cameraPos) * 0.05;
+  glm::vec3 direction = glm::normalize(cameraTarget - cameraPos) * stepSize;
   cameraPos -= direction;
   cameraTarget -= direction;
   setView();
@@ -77,8 +75,8 @@ void Scene::rotateCameraHorizontal(double f) {
   if (f >= 0) {
       factor *= -1;
   }
-  glm::vec3 pt = (cameraTarget - cameraPos);
-  cameraTarget = cameraPos + glm::rotateY(pt, factor);
+  glm::vec3 forwardVec = (cameraTarget - cameraPos);
+  cameraTarget = cameraPos + glm::rotateY(forwardVec, factor);
   setView();
 }
 
@@ -87,8 +85,8 @@ void Scene::rotateCameraVertical(double f) {
   if (f < 0) {
       factor *= -1;
   }
-  glm::vec3 pt = (cameraTarget - cameraPos);
-  cameraTarget = cameraPos + glm::rotateX(pt, factor);
+  glm::vec3 forwardVec = (cameraTarget - cameraPos);
+  cameraTarget = cameraPos + glm::rotateX(forwardVec, factor);
   setView();
 }
 
@@ -99,3 +97,4 @@ void Scene::setView() {
 }
 
 const glm::vec3 Scene::upVector(0, 1, 0);
+const float Scene::stepSize = 0.05;
