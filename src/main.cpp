@@ -17,6 +17,13 @@ void processInput(GLFWwindow *window, Scene &scene);
 const float screenWidth = 800;
 const float screenHeight = 600;
 
+// TODO: Clean me
+double xDiff, yDiff;
+double xPos = 0.0;
+double yPos = 0.0;
+double xPosOld = 0.0;
+double yPosOld = 0.0;
+
 int main() {
   glfwInit();
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -37,6 +44,7 @@ int main() {
     return -1;
   }
 
+  glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
   glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
   glEnable(GL_DEPTH_TEST);
   glCullFace(GL_BACK);
@@ -98,16 +106,28 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
   glViewport(0, 0, width, height);
 }
 
+void rotateCamera(GLFWwindow *window, Scene &scene) {
+  glfwGetCursorPos(window, &xPos, &yPos);
+  xDiff = xPos - xPosOld;
+  yDiff = -1 * (yPos - yPosOld);
+  xPosOld = xPos;
+  yPosOld = yPos;
+  scene.rotateCameraHorizontal(xDiff);
+  scene.rotateCameraVertical(yDiff);
+}
+
 void processInput(GLFWwindow *window, Scene &scene) {
   if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
     glfwSetWindowShouldClose(window, true);
-  } else if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS) {
+  } else if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS || glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
     scene.moveCameraLeft();
-  } else if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS) {
+  } else if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS || glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
     scene.moveCameraRight();
-  } else if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) {
+  } else if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS || glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
     scene.moveCameraForward();
-  } else if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS) {
+  } else if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS || glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
     scene.moveCameraBackward();
   }
+
+  rotateCamera(window, scene);
 }

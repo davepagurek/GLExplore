@@ -1,12 +1,13 @@
 #include "Scene.hpp"
+#include <iostream>
+#include "glm/ext.hpp"
 
 Scene::Scene(glm::mat4 projection, glm::vec3 cameraPos, glm::vec3 cameraTarget, Color ambientLight,
       std::vector<PointLight> pointLights):
   cameraPos(cameraPos),
   cameraTarget(cameraTarget),
   projection(projection),
-  view(glm::lookAt(cameraPos, cameraTarget, Scene::upVector)),
-  ambientLight(ambientLight),
+  view(glm::lookAt(cameraPos, cameraTarget, Scene::upVector)), ambientLight(ambientLight),
   pointLights(std::move(pointLights)) {}
 
 // Accessors
@@ -38,26 +39,56 @@ const std::vector<PointLight>& Scene::getPointLights() const {
 // Camera movement
 
 void Scene::moveCameraLeft() {
-  cameraPos.x += 0.05;
-  cameraTarget.x += 0.05;
+  float PI_BY_2 = glm::pi<float>() / 2.0;
+  glm::vec3 dir = glm::normalize(cameraTarget - cameraPos);
+  dir = glm::rotateY(dir, PI_BY_2);
+  dir *= 0.05;
+  cameraTarget += dir;
+  cameraPos += dir;
   setView();
 }
 
 void Scene::moveCameraRight() {
-  cameraPos.x -= 0.05;
-  cameraTarget.x -= 0.05;
+  float PI_BY_2 = glm::pi<float>() / 2.0;
+  glm::vec3 dir = glm::normalize(cameraTarget - cameraPos);
+  dir = glm::rotateY(dir, PI_BY_2);
+  dir *= 0.05;
+  cameraTarget += dir;
+  cameraPos += dir;
   setView();
 }
 
 void Scene::moveCameraForward() {
-  cameraPos.z += 0.05;
-  cameraTarget.z += 0.05;
+  glm::vec3 direction = glm::normalize(cameraTarget - cameraPos) * 0.05;
+  cameraPos += direction;
+  cameraTarget += direction;
   setView();
 }
 
 void Scene::moveCameraBackward() {
-  cameraPos.z -= 0.05;
-  cameraTarget.z -= 0.05;
+  glm::vec3 direction = glm::normalize(cameraTarget - cameraPos) * 0.05;
+  cameraPos -= direction;
+  cameraTarget -= direction;
+  setView();
+}
+
+void Scene::rotateCameraHorizontal(double f) {
+  float factor = glm::sqrt(2 - 2 * glm::cos(f)) / 80.0;
+  if (f >= 0) {
+      factor *= -1;
+  }
+  glm::vec3 pt = (cameraTarget - cameraPos);
+  cameraTarget = cameraPos + glm::rotateY(pt, factor);
+  setView();
+}
+
+void Scene::rotateCameraVertical(double f) {
+  float factor = glm::sqrt(2 - 2 * glm::cos(f)) / 80.0;
+  if (f < 0) {
+      factor *= -1;
+  }
+  glm::vec3 pt = (cameraTarget - cameraPos);
+  cameraTarget = cameraPos + glm::rotateX(pt, factor);
   setView();
 }
 

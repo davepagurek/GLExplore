@@ -27,6 +27,8 @@ public:
   void moveCameraRight();
   void moveCameraForward();
   void moveCameraBackward();
+  void rotateCameraHorizontal(double);
+  void rotateCameraVertical(double);
 
 private:
 
