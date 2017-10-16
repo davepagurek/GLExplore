@@ -60,7 +60,7 @@ def getEdge(v1, v2):
 def getNeighbourEdges(v, ns):
     return set(map(lambda x : getEdge(v, x), ns))
 
-print('int triTable[][] = {')
+print('const int triTable[256][13] = {')
 for i in range(256):
     verticesBelow = set()
     for j in range(8):
@@ -89,11 +89,16 @@ for i in range(256):
         elif len(ns) == 1:
             v2 = list(ns)[0]
             if len(surfacePointGraph[v2]) == 1:
-                vEdges = list(getNeighbourEdges(v, vertexNeighbours[v] - ns))
-                v2Edges = list(getNeighbourEdges(v2, vertexNeighbours[v2] - surfacePointGraph[v2]))
+                vEdges = getNeighbourEdges(v, vertexNeighbours[v] - ns)
+                v2Edges = getNeighbourEdges(v2, vertexNeighbours[v2] - surfacePointGraph[v2])
 
-                tri1 = [vEdges[0], vEdges[1], v2Edges[0]]
-                tri2 = [v2Edges[0], v2Edges[1], vEdges[0]]
+                vPv2EdgeHorizontal = list(vEdges)[0]
+                vPv2EdgeVertical = list(vEdges)[1]
+                v2PvEdgeHorizontal = list(v2Edges & parallelEdges[vPv2EdgeHorizontal])[0]
+                v2PvEdgeVertical = list(v2Edges & parallelEdges[vPv2EdgeVertical])[0]
+
+                tri1 = [vPv2EdgeHorizontal, vPv2EdgeVertical, v2PvEdgeHorizontal]
+                tri2 = [v2PvEdgeHorizontal, v2PvEdgeVertical, vPv2EdgeVertical]
                 triangles.append(tri1)
                 triangles.append(tri2)
 

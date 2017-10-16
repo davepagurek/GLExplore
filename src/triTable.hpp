@@ -4,7 +4,7 @@
 #include <glm/glm.hpp>
 #include <utility>
 
-extern int triTable[256][13];
+extern const int triTable[256][13];
 
 std::pair<glm::vec3, glm::vec3> getPositionAndNormal(
     int edgeVertexNum, float* densityCube, glm::vec3* gradientCube, float isoLevel = 0.0);

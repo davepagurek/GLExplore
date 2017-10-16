@@ -42,7 +42,7 @@ std::vector<float> hills(int depth, int octaves) {
   }
 
   int minHeight = minHeightF*100;
-  int maxHeight = (int)maxHeightF*100 + 1;
+  int maxHeight = maxHeightF*100 + 1;
   
   std::vector<std::vector<std::vector<float>>> density(
       depth, std::vector<std::vector<float>>(
@@ -51,8 +51,11 @@ std::vector<float> hills(int depth, int octaves) {
     for (int z = 0; z < depth; z++) {
       for (int y = 0; y < maxHeight - minHeight; y++) {
         density[x][z][y] = (y + minHeight)/100.0 - heights[x][z];
+        //std::cout << '(' << x << ',' << y << ',' << z << ")=" << density[x][z][y] << ' ';
       }
+      //std::cout << '\n';
     }
+    //std::cout << '\n';
   }
 
   std::vector<std::vector<std::vector<glm::vec3>>> gradient(
@@ -77,44 +80,57 @@ std::vector<float> hills(int depth, int octaves) {
     }
   }
 
+#ifdef USE_CUBES
   // The stuff below creates a disconnected mesh. I want to fix it later since it could
   // be useful for rendering stuff like spheres as isosurfaces, so the dead code is here
   // for now.
-#if 0
   for (int x = 0; x < depth - 1; x++) {
     for (int z = 0; z < depth - 1; z++) {
-      for (int y = 0; y < maxHeight - minHeight - 1; y++) {
+      for (int y = 0; y < depth - 1; y++) {
         int triTableIdx = 0;
         for (int dx : {0, 1}) {
           for (int dz : {0, 1}) {
             for (int dy : {0, 1}) {
               if (density[x + dx][z + dz][y + dy] < 0) {
-                triTableIdx |= 1 << (dy*4 + dz*2 + dx);
+                triTableIdx |= 1 << (dy*2 + dz*4 + dx);
               }
             }
           }
         }
+        std::cout << x << ' ' << y << ' ' << z << '\n';
+        std::cout << triTableIdx << '\n';
 
-        int* triangleVertices = triTable[triTableIdx];
+        const int* triangleVertices = &triTable[triTableIdx][0];
         float densityCube[8] = {
-          density[x][z][y], density[x+1][z][y], density[x][z+1][y],
-          density[x+1][z+1][y], density[x][z][y+1], density[x+1][z][y+1],
+          density[x][z][y], density[x+1][z][y], density[x][z][y+1],
+          density[x+1][z][y+1], density[x][z+1][y], density[x+1][z+1][y],
           density[x][z+1][y+1], density[x+1][z+1][y+1]
         };
         glm::vec3 gradientCube[8] = {
-          gradient[x][z][y], gradient[x+1][z][y], gradient[x][z+1][y],
-          gradient[x+1][z+1][y], gradient[x][z][y+1], gradient[x+1][z][y+1],
+          gradient[x][z][y], gradient[x+1][z][y], gradient[x][z][y+1],
+          gradient[x+1][z][y+1], gradient[x][z+1][y], gradient[x+1][z+1][y],
           gradient[x][z+1][y+1], gradient[x+1][z+1][y+1]
         };
 
-        for (int* currentVertex = triangleVertices; *currentVertex != -1; currentVertex++) {
+        for (auto d : densityCube) {
+          //std::cout << d << ' ';
+        }
+        //std::cout << '\n';
+
+        if (*triangleVertices == -1) {
+          //std::cout << '\t' << *triangleVertices << '\n';
+        }
+        for (const int* currentVertex = triangleVertices; *currentVertex != -1; currentVertex++) {
+          //std::cout << '\t' << *currentVertex << '\n';
           glm::vec3 position, normal;
           std::tie(position, normal) = getPositionAndNormal(*currentVertex, densityCube, gradientCube);
           normal = glm::normalize(normal);
           
           float x1 = -0.5 + ((float)x + position.x)/(depth-1.0);
           float z1 = -0.5 + ((float)z + position.z)/(depth-1.0);
-          float y1 = ((float)y + minHeight + position.y)/100.0;
+          float y1 = ((float)y + + position.y)/100.0 + minHeightF;
+
+          std::cout << '\t' << x1 << ' ' << y1 << ' ' << z1 << '\n';
 
           vertices.push_back(x1);
           vertices.push_back(y1);
@@ -126,8 +142,8 @@ std::vector<float> hills(int depth, int octaves) {
       }
     }
   }
-#endif
 
+#else
   // Create triangle faces out of the height grid
   for (int i = 0; i < heights.size()-1; i++) {
     for (int j = 0; j < heights[i].size()-1; j++) {
@@ -196,7 +212,7 @@ std::vector<float> hills(int depth, int octaves) {
       vertices.push_back(n2.z);
     }
   }
-
+#endif
   return vertices;
 }
 
