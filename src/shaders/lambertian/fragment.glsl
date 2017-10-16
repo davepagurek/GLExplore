@@ -27,9 +27,7 @@ float calculateShadow() {
       for(float z = -offset; z < offset; z += offset / (samples * 0.5)) {
         float closestDepth = texture(depthMap, fragToLight + vec3(x, y, z)).r;
         closestDepth *= farPlane;
-        //if(currentDepth - bias > closestDepth) {
         shadow += min(1.0, max(currentDepth - bias - closestDepth, 0));
-        //}
       }
     }
   }
