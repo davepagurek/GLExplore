@@ -1,13 +1,15 @@
 #include "Scene.hpp"
 
 Scene::Scene(glm::mat4 projection, glm::vec3 cameraPos, glm::vec3 cameraTarget, Color ambientLight,
-      std::vector<PointLight> pointLights):
+      std::vector<PointLight> pointLights, float farPlane):
   cameraPos(cameraPos),
   cameraTarget(cameraTarget),
   projection(projection),
   view(glm::lookAt(cameraPos, cameraTarget, Scene::upVector)),
   ambientLight(ambientLight),
-  pointLights(std::move(pointLights)) {}
+  pointLights(std::move(pointLights)),
+  farPlane(farPlane)
+{}
 
 // Accessors
 
@@ -33,6 +35,10 @@ const glm::mat4& Scene::getView() const {
 
 const std::vector<PointLight>& Scene::getPointLights() const {
   return pointLights;
+}
+
+const float Scene::getFarPlane() const {
+  return farPlane;
 }
 
 // Camera movement

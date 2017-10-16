@@ -12,7 +12,7 @@
 class Scene {
 
 public:
-  Scene(glm::mat4, glm::vec3, glm::vec3, Color, std::vector<PointLight>);
+  Scene(glm::mat4, glm::vec3, glm::vec3, Color, std::vector<PointLight>, float);
 
   // Accessors
   const Color&     getAmbientLight() const;
@@ -21,6 +21,7 @@ public:
   const glm::mat4& getProjection()   const;
   const glm::mat4& getView()         const;
   const std::vector<PointLight>& getPointLights() const;
+  const float getFarPlane() const;
 
   // Camera movement
   void moveCameraLeft();
@@ -38,6 +39,7 @@ private:
   glm::mat4 projection, view;
   Color ambientLight;
   std::vector<PointLight> pointLights;
+  float farPlane;
 
 };
 
