@@ -42,8 +42,10 @@ void Scene::moveCameraLeft() {
   float PI_BY_2 = glm::pi<float>() / 2.0;
   glm::vec3 dir = glm::normalize(cameraTarget - cameraPos);
   dir = glm::rotateY(dir, PI_BY_2) * stepSize;
-  cameraTarget += dir;
-  cameraPos += dir;
+  cameraTarget.x += dir.x;
+  cameraTarget.z += dir.z;
+  cameraPos.x += dir.x;
+  cameraPos.z += dir.z;
   setView();
 }
 
@@ -51,8 +53,10 @@ void Scene::moveCameraRight() {
   float PI_BY_2 = glm::pi<float>() / 2.0;
   glm::vec3 dir = glm::normalize(cameraTarget - cameraPos);
   dir = glm::rotateY(dir, -1 * PI_BY_2) * stepSize;
-  cameraTarget += dir;
-  cameraPos += dir;
+  cameraTarget.x += dir.x;
+  cameraTarget.z += dir.z;
+  cameraPos.x += dir.x;
+  cameraPos.z += dir.z;
   setView();
 }
 
