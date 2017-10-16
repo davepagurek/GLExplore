@@ -28,6 +28,8 @@ public:
   void moveCameraRight();
   void moveCameraForward();
   void moveCameraBackward();
+  void rotateCameraHorizontal(double);
+  void rotateCameraVertical(double);
 
 private:
 
@@ -35,6 +37,7 @@ private:
   void setView();
 
   static const glm::vec3 upVector;
+  static const float stepSize;
   glm::vec3 cameraPos, cameraTarget;
   glm::mat4 projection, view;
   Color ambientLight;

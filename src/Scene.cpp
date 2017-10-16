@@ -1,4 +1,6 @@
 #include "Scene.hpp"
+#include <iostream>
+#include "glm/ext.hpp"
 
 Scene::Scene(glm::mat4 projection, glm::vec3 cameraPos, glm::vec3 cameraTarget, Color ambientLight,
       std::vector<PointLight> pointLights, float farPlane):
@@ -10,6 +12,7 @@ Scene::Scene(glm::mat4 projection, glm::vec3 cameraPos, glm::vec3 cameraTarget, 
   pointLights(std::move(pointLights)),
   farPlane(farPlane)
 {}
+
 
 // Accessors
 
@@ -44,26 +47,58 @@ const float Scene::getFarPlane() const {
 // Camera movement
 
 void Scene::moveCameraLeft() {
-  cameraPos.x += 0.05;
-  cameraTarget.x += 0.05;
+  float PI_BY_2 = glm::pi<float>() / 2.0;
+  glm::vec3 dir = glm::normalize(cameraTarget - cameraPos);
+  dir = glm::rotateY(dir, PI_BY_2) * stepSize;
+  cameraTarget.x += dir.x;
+  cameraTarget.z += dir.z;
+  cameraPos.x += dir.x;
+  cameraPos.z += dir.z;
   setView();
 }
 
 void Scene::moveCameraRight() {
-  cameraPos.x -= 0.05;
-  cameraTarget.x -= 0.05;
+  float PI_BY_2 = glm::pi<float>() / 2.0;
+  glm::vec3 dir = glm::normalize(cameraTarget - cameraPos);
+  dir = glm::rotateY(dir, -1 * PI_BY_2) * stepSize;
+  cameraTarget.x += dir.x;
+  cameraTarget.z += dir.z;
+  cameraPos.x += dir.x;
+  cameraPos.z += dir.z;
   setView();
 }
 
 void Scene::moveCameraForward() {
-  cameraPos.z += 0.05;
-  cameraTarget.z += 0.05;
+  glm::vec3 direction = glm::normalize(cameraTarget - cameraPos) * stepSize;
+  cameraPos += direction;
+  cameraTarget += direction;
   setView();
 }
 
 void Scene::moveCameraBackward() {
-  cameraPos.z -= 0.05;
-  cameraTarget.z -= 0.05;
+  glm::vec3 direction = glm::normalize(cameraTarget - cameraPos) * stepSize;
+  cameraPos -= direction;
+  cameraTarget -= direction;
+  setView();
+}
+
+void Scene::rotateCameraHorizontal(double f) {
+  float factor = glm::sqrt(2 - 2 * glm::cos(f)) / 80.0;
+  if (f >= 0) {
+      factor *= -1;
+  }
+  glm::vec3 forwardVec = (cameraTarget - cameraPos);
+  cameraTarget = cameraPos + glm::rotateY(forwardVec, factor);
+  setView();
+}
+
+void Scene::rotateCameraVertical(double f) {
+  float factor = glm::sqrt(2 - 2 * glm::cos(f)) / 80.0;
+  if (f < 0) {
+      factor *= -1;
+  }
+  glm::vec3 forwardVec = (cameraTarget - cameraPos);
+  cameraTarget = cameraPos + glm::rotateX(forwardVec, factor);
   setView();
 }
 
@@ -74,3 +109,4 @@ void Scene::setView() {
 }
 
 const glm::vec3 Scene::upVector(0, 1, 0);
+const float Scene::stepSize = 0.05;
