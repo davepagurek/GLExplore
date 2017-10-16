@@ -69,7 +69,7 @@ int main() {
       glm::vec3(0.0f, 0.0f, 0.0f),
       Color(0xDDDDDD), // Grey
       {
-        {Color(0xB59D24), glm::vec3(0.5, 2.0, 10.0)}, // Orange
+        {Color(0xB59D24), glm::vec3(0.5, 8.0, 2.0)}, // Orange
         {Color(0x330066), glm::vec3(-3, 0.0, -2.0)} // Indigo
       },
       100.0f
@@ -130,6 +130,7 @@ int main() {
       glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);
       glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
       glClear(GL_DEPTH_BUFFER_BIT);
+      glCullFace(GL_FRONT);
       pointShadowShader.useProgram();
       for (int i = 0; i < 6; i++) {
         unsigned int loc = pointShadowShader.getUniformLocation(("shadowMatrices[" + std::to_string(i) + "]").c_str());
@@ -142,6 +143,7 @@ int main() {
       ground.shadow(scene, pointShadowShader);
 
       // Switch to main shader
+      glCullFace(GL_BACK);
       int width, height;
       glBindFramebuffer(GL_FRAMEBUFFER, 0);
       glfwGetFramebufferSize(window, &width, &height);
