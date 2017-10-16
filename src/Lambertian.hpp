@@ -37,6 +37,7 @@ class Lambertian: public Object {
 
     Lambertian(Color diffuse, std::vector<float> vertices, GLShader* shader);
     virtual void draw(const Scene& scene);
+    void shadow(const Scene& scene, GLShader& shadowShader);
 
     void setTranslation(const glm::vec3& m);
     void setRotation(const glm::vec3& m);

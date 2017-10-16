@@ -5,7 +5,10 @@
 
 class GLShader {
   public:
-    GLShader(const char* vertexShaderFile, const char* fragmentShaderFile);
+    GLShader(
+      const char* vertexShaderFile,
+      const char* fragmentShaderFile,
+      const char* geometryShaderFile = nullptr);
     ~GLShader();
 
     void useProgram(); 
@@ -16,7 +19,7 @@ class GLShader {
 
   private:
     GLuint shaderProgram = -1;
-    GLuint vertexShader = -1, fragmentShader = -1;
+    GLuint vertexShader = -1, fragmentShader = -1, geometryShader = -1;
 };
 
 #endif

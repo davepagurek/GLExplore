@@ -2,9 +2,11 @@
 
 #include "utils.hpp"
 
-GLShader::GLShader(const char* vertexShaderFilename, const char* fragmentShaderFilename) {
+GLShader::GLShader(
+    const char* vertexShaderFilename,
+    const char* fragmentShaderFilename,
+    const char* geometryShaderFilename) {
   std::string vertexSource = slurp(vertexShaderFilename);
-
   std::string fragmentSource = slurp(fragmentShaderFilename);
 
   vertexShader = compileShader(vertexSource.c_str(), GL_VERTEX_SHADER);
@@ -12,12 +14,20 @@ GLShader::GLShader(const char* vertexShaderFilename, const char* fragmentShaderF
   shaderProgram = glCreateProgram();
   glAttachShader(shaderProgram, vertexShader);
   glAttachShader(shaderProgram, fragmentShader);
+  if (geometryShaderFilename) {
+    std::string geometryShaderSource = slurp(geometryShaderFilename);
+    geometryShader = compileShader(geometryShaderSource.c_str(), GL_GEOMETRY_SHADER);
+    glAttachShader(shaderProgram, geometryShader);
+  }
   glLinkProgram(shaderProgram);
 }
 
 GLShader::~GLShader() {
   glDeleteShader(vertexShader);
   glDeleteShader(fragmentShader);
+  if (geometryShader != -1) {
+    glDeleteShader(geometryShader);
+  }
 }
 
 void GLShader::useProgram() {
