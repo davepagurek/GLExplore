@@ -28,4 +28,9 @@ std::string slurp(const char* filename);
 // Take a float array of face vertex coordinates and insert normals after each vertex
 std::vector<float> addNormals(const std::vector<float>& vertices);
 
+template<typename T>
+T lerp(T v1, T v2, float weight) {
+  return weight*v1 + (1-weight)*v2;
+}
+
 #endif
